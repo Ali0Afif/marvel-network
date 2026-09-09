@@ -3,182 +3,361 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Week 1: Bootstrap — Marvel Network Lab</title>
+  <title>Week 1: Who Links to Whom? — Marvel Network</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
-  <header>
-    <div class="header-inner">
-      <div class="logo">⬡ Marvel Network Lab</div>
-      <nav>
-        <a href="../index.html">Home</a>
-        <a href="../index.html#posts">Posts</a>
-        <a href="../index.html#about">About</a>
-      </nav>
+
+  <nav class="post-nav">
+    <span class="nav-title">Marvel · Network</span>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="week1.html" class="active">W1</a>
+    </div>
+  </nav>
+
+  <!-- ── Opener ── -->
+  <header class="post-opener">
+    <div class="opener-bg-num">106</div>
+    <div class="opener-inner">
+      <p class="opener-week">Week 1 · September 2026 · Degree distributions</p>
+      <h1 class="opener-title">Who Links to Whom —<br>and Why Are Those<br>Different People?</h1>
+      <p class="opener-sub">
+        Spider-Man is referenced by 35% of all Marvel Wikipedia pages. He links back to 9 of them.
+        The gap between those two numbers is the entire story of this week.
+      </p>
     </div>
   </header>
 
-  <div class="post-header">
-    <span class="week-tag">Week 1</span>
-    <h1>Bootstrap: First Look at the Marvel Graph</h1>
-    <p class="meta">September 2026 · degree distributions · giant component · the islands</p>
+  <!-- ── Section 1: The data ── -->
+  <div class="chapter-break">
+    <div class="chapter-break-inner">
+      <div class="chapter-number">01</div>
+      <div>
+        <div class="chapter-title">303 nodes. 1,784 edges. Where they came from.</div>
+        <div class="chapter-sub">The frozen Week 1 snapshot from the course data page.</div>
+      </div>
+    </div>
   </div>
 
-  <div class="post-body">
-    <a class="back-link" href="../index.html">← All posts</a>
-
-    <h2>What we asked</h2>
+  <div class="post-content">
     <p>
-      We started with a simple question: what does the Marvel Wikipedia network actually <em>look</em> like?
-      303 superheroes, edges drawn wherever one hero's Wikipedia page links to another's.
-      Before doing anything fancy, we wanted ground truth on the shape of the thing —
-      degree distributions, in vs out, the giant component, and whatever was left outside it.
+      Every node is a character listed in Wikipedia's <em>Category: Marvel Comics superheroes</em>.
+      Every directed edge is a Wikipedia link — page A links to page B — recorded when the snapshot was taken.
+      303 heroes. 1,784 arrows.
     </p>
 
-    <h2>Loading the data</h2>
     <p>
-      The course provides a frozen snapshot: <code>week1_edges.tsv</code> (1784 directed edges)
-      and <code>week1_nodes.tsv</code> (all 303 characters, including isolated ones).
-      The key move is adding nodes <em>before</em> edges — otherwise the 17 isolated heroes vanish silently.
+      The most important thing when loading the data: add nodes before edges.
+      Not because NetworkX will complain, but because it will silently drop the 17 characters
+      whose pages link to nobody and nobody links to. Adding them explicitly first keeps them
+      in the graph where they belong.
     </p>
-    <pre><code>import networkx as nx
-import pandas as pd
+
+    <pre><code>import networkx as nx, pandas as pd
 
 nodes = pd.read_csv("week1_nodes.tsv", sep="\t", comment="#")
 edges = pd.read_csv("week1_edges.tsv", sep="\t", comment="#",
                     header=None, names=["source", "target"])
 
 G = nx.DiGraph()
-G.add_nodes_from(nodes["node_id"])   # add ALL nodes first
+G.add_nodes_from(nodes["node_id"])   # isolates survive
 G.add_edges_from(zip(edges["source"], edges["target"]))
 
-# 303 nodes, 1784 edges, 17 isolates
-print(G.number_of_nodes(), G.number_of_edges())</code></pre>
+print(G.number_of_nodes(), G.number_of_edges())
+# → 303  1784</code></pre>
 
-    <h2>Degree distributions — linear</h2>
     <p>
-      Most characters have very low degree. A handful have enormous in-degree.
-      On a linear scale the distribution looks like a wall hugging the left axis with a long flat tail —
-      almost all the mass is in the 0–10 range.
+      Make the graph undirected (ask only which pairs are connected at all) and the 1,784 arrows
+      collapse to 1,434 pairs — 350 edges point both ways. Average undirected degree:
+      <code>2 × 1434 / 303 ≈ 9.5</code>. Density: 3%. A typical real network.
+      97% of the connections that could exist, don't.
     </p>
+  </div>
 
-    <div class="figure">
-      <img src="../figures/week1_degree_linear.png" alt="Linear in- and out-degree distributions" />
-      <figcaption>In-degree (red) and out-degree (blue) on a linear scale. Most heroes cluster near zero.</figcaption>
+  <!-- ── Section 2: Degree distributions ── -->
+  <div class="chapter-break">
+    <div class="chapter-break-inner">
+      <div class="chapter-number">02</div>
+      <div>
+        <div class="chapter-title">The shape of the network.</div>
+        <div class="chapter-sub">Linear axes hide what log–log axes reveal.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-content">
+    <p>
+      Plot how many heroes have each in-degree — how many Wikipedia pages reference them.
+      On linear axes it looks like a wall: everyone clusters near zero, a few points
+      trail off to the right. Nothing jumps out.
+    </p>
+  </div>
+
+  <figure class="post-figure">
+    <img src="../figures/week1_degree_linear.png" alt="Linear in- and out-degree distributions" />
+    <figcaption>
+      <strong>Linear scale.</strong> In-degree (red) and out-degree (blue).
+      The vast majority of heroes have very few connections. The tail is invisible.
+    </figcaption>
+  </figure>
+
+  <div class="post-content">
+    <p>
+      Switch to log–log axes and the structure becomes clear. The in-degree distribution
+      stretches across two orders of magnitude with a heavy tail — the signature of a hub network.
+      A handful of heroes vacuum up a disproportionate share of incoming links.
+      The out-degree tail is softer, dying much earlier. Two different shapes in the same network.
+    </p>
+  </div>
+
+  <figure class="post-figure">
+    <img src="../figures/week1_degree_loglog.png" alt="Log-log in- and out-degree distributions" />
+    <figcaption>
+      <strong>Log–log scale.</strong> The in-degree tail (red) stretches all the way to Spider-Man at k = 106.
+      The out-degree tail (blue) dies around k = 28. Same network, two very different distributions.
+      Both axes show k + 1 so the 17 zero-degree nodes stay on the log axis instead of vanishing.
+    </figcaption>
+  </figure>
+
+  <!-- ── Section 3: The asymmetry ── -->
+  <div class="chapter-break">
+    <div class="chapter-break-inner">
+      <div class="chapter-number">03</div>
+      <div>
+        <div class="chapter-title">In vs out: two completely different people.</div>
+        <div class="chapter-sub">Cultural weight is not the same as narrative complexity.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-content">
+    <p>
+      In-degree and out-degree select for different things. An in-link is conferred:
+      some other article's editors decided this character was worth mentioning.
+      An out-link is authored: someone sat down and wrote it into this page.
+      One has no ceiling. The other has a budget.
+    </p>
+  </div>
+
+  <div class="post-content">
+    <div class="stat-callout">
+      <span class="big-num">106</span>
+      <span class="big-desc">
+        <strong>Spider-Man's in-degree.</strong> 106 of the 302 other heroes reference him.
+        That's 35% of the entire network — referencing one node.
+        His out-degree: 9.
+      </span>
     </div>
 
-    <h2>Degree distributions — log–log</h2>
     <p>
-      Switch to log–log and the structure becomes clear: a heavy-tailed distribution consistent with a
-      scale-free network. A few hubs pull in a disproportionate share of links.
-      The out-degree tail is softer — outgoing links are more evenly spread.
+      Spider-Man doesn't just have high centrality. He's become a <em>reference point</em> —
+      the "you are here" marker of the Marvel universe on Wikipedia. Editors invoke him
+      as context for characters who never met him.
     </p>
 
-    <div class="figure">
-      <img src="../figures/week1_degree_loglog.png" alt="Log-log in- and out-degree distributions" />
-      <figcaption>Same data on a log–log scale. The in-degree tail (red) is heavier than out-degree (blue).</figcaption>
-    </div>
-
-    <h2>Who links to whom — and why are those different people?</h2>
     <p>
-      High in-degree means <em>everyone else's page mentions you</em>. High out-degree means
-      <em>your page mentions everyone else</em>. These are very different characters:
+      The out-degree leaders tell a completely different story. Betsy Braddock (Psylocke)
+      links out to 28 heroes; only 7 link back. Her page catalogs decades of team affiliations
+      and retcons across the X-Men, Excalibur, and three different bodies. Adam Warlock,
+      Cloak and Dagger — characters whose Wikipedia pages are essentially annotated
+      relationship maps. They reach out; the network doesn't always reach back.
     </p>
 
-    <table style="width:100%;border-collapse:collapse;margin-bottom:1.5rem;font-size:.9rem;">
+    <table class="data-table">
       <thead>
-        <tr style="border-bottom:1px solid #2a2a3a;color:#888;text-align:left;">
-          <th style="padding:.4rem .8rem;">Top by in-degree</th><th style="padding:.4rem .8rem;">in</th><th style="padding:.4rem .8rem;">out</th>
-          <th style="padding:.4rem .8rem;border-left:1px solid #2a2a3a;">Top by out-degree</th><th style="padding:.4rem .8rem;">out</th><th style="padding:.4rem .8rem;">in</th>
+        <tr>
+          <th>Hero</th>
+          <th>In-degree</th>
+          <th>Out-degree</th>
+          <th>Character</th>
         </tr>
       </thead>
-      <tbody style="color:#bbb;">
-        <tr style="border-bottom:1px solid #1a1a2a;">
-          <td style="padding:.35rem .8rem;">Spider-Man</td><td>106</td><td>9</td>
-          <td style="padding:.35rem .8rem;border-left:1px solid #2a2a3a;">Betsy Braddock</td><td>28</td><td>7</td>
-        </tr>
-        <tr style="border-bottom:1px solid #1a1a2a;">
-          <td style="padding:.35rem .8rem;">Hulk</td><td>64</td><td>10</td>
-          <td style="padding:.35rem .8rem;border-left:1px solid #2a2a3a;">Cloak and Dagger</td><td>24</td><td>11</td>
-        </tr>
-        <tr style="border-bottom:1px solid #1a1a2a;">
-          <td style="padding:.35rem .8rem;">Wolverine</td><td>60</td><td>17</td>
-          <td style="padding:.35rem .8rem;border-left:1px solid #2a2a3a;">Adam Warlock</td><td>22</td><td>8</td>
-        </tr>
-        <tr style="border-bottom:1px solid #1a1a2a;">
-          <td style="padding:.35rem .8rem;">Doctor Strange</td><td>50</td><td>17</td>
-          <td style="padding:.35rem .8rem;border-left:1px solid #2a2a3a;">Venom</td><td>21</td><td>17</td>
+      <tbody>
+        <tr class="highlight">
+          <td>Spider-Man</td>
+          <td class="num">106</td>
+          <td class="num">9</td>
+          <td>The landmark</td>
         </tr>
         <tr>
-          <td style="padding:.35rem .8rem;">Deadpool</td><td>33</td><td>19</td>
-          <td style="padding:.35rem .8rem;border-left:1px solid #2a2a3a;">U.S. Agent</td><td>20</td><td>6</td>
+          <td>Hulk</td>
+          <td class="num">64</td>
+          <td class="num">10</td>
+          <td>The pillar</td>
+        </tr>
+        <tr>
+          <td>Wolverine</td>
+          <td class="num">60</td>
+          <td class="num">17</td>
+          <td>The pillar</td>
+        </tr>
+        <tr>
+          <td>Doctor Strange</td>
+          <td class="num">50</td>
+          <td class="num">17</td>
+          <td>The pillar</td>
+        </tr>
+        <tr>
+          <td>Betsy Braddock</td>
+          <td class="num">7</td>
+          <td class="num">28</td>
+          <td>The connector</td>
+        </tr>
+        <tr>
+          <td>Cloak and Dagger</td>
+          <td class="num">11</td>
+          <td class="num">24</td>
+          <td>The connector</td>
+        </tr>
+        <tr>
+          <td>Adam Warlock</td>
+          <td class="num">8</td>
+          <td class="num">22</td>
+          <td>The connector</td>
+        </tr>
+        <tr>
+          <td>U.S. Agent</td>
+          <td class="num">6</td>
+          <td class="num">20</td>
+          <td>The connector</td>
         </tr>
       </tbody>
     </table>
 
     <p>
-      The left column — the cultural pillars. Characters so foundational that half the universe's pages
-      mention them in passing. Spider-Man's in-degree is <strong>106 out of 302 possible</strong>: over a third
-      of all heroes reference him. His out-degree is only 9. He's a landmark, not a connector.
+      The asymmetry in one sentence: <strong>prominence and connectivity select for
+      completely different things.</strong> Cultural weight accumulates passively —
+      the already-famous get mentioned more. Connectivity takes work.
+      Someone has to write the links.
     </p>
+  </div>
+
+  <!-- ── Section 4: The network ── -->
+  <div class="chapter-break">
+    <div class="chapter-break-inner">
+      <div class="chapter-number">04</div>
+      <div>
+        <div class="chapter-title">Drawing the graph.</div>
+        <div class="chapter-sub">277 heroes in one giant connected component.</div>
+      </div>
+    </div>
+  </div>
+
+  <figure class="post-figure">
+    <img src="../figures/week1_network.png" alt="Marvel Wikipedia network — giant component" style="max-height: 700px; object-fit: contain;" />
+    <figcaption>
+      <strong>Spring-layout of the giant component (277 nodes).</strong>
+      Node size and colour scale with in-degree. The top 15 hubs are labelled.
+      Spider-Man (top-right area) is visibly outsized. The graph is drawn with the real data
+      from the Week 1 frozen snapshot.
+    </figcaption>
+  </figure>
+
+  <div class="post-content">
     <p>
-      The right column is different. Betsy Braddock (Psylocke) links out to 28 others but only 7 link back.
-      Her page catalogs decades of team affiliations and retcons. Adam Warlock, Cloak and Dagger — characters
-      with complex histories whose Wikipedia pages are essentially annotated relationship maps.
-      They reach out; the network doesn't always reach back.
+      Convert to undirected and find connected components. 277 of 303 heroes (91%)
+      sit in one giant component. Outside it: 18 smaller pieces — one cluster of 9,
+      and 17 true isolates.
     </p>
 
-    <div class="callout">
-      <strong>The asymmetry in one sentence:</strong> prominence (in-degree) and connectivity (out-degree)
-      select for completely different things — cultural weight vs. narrative complexity.
+    <pre><code>components = sorted(
+    nx.connected_components(G.to_undirected()),
+    key=len, reverse=True
+)
+print(len(components[0]))   # 277
+print(len(components) - 1)  # 18 other components</code></pre>
+  </div>
+
+  <!-- ── Section 5: The forgotten ones ── -->
+  <div class="chapter-break">
+    <div class="chapter-break-inner">
+      <div class="chapter-number">05</div>
+      <div>
+        <div class="chapter-title">The 17 heroes the graph forgot.</div>
+        <div class="chapter-sub">Not obscure. Just unlinked.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-content">
+
+    <div class="stat-callout">
+      <span class="big-num">17</span>
+      <span class="big-desc">
+        <strong>True isolates.</strong> Heroes with no incoming and no outgoing links.
+        They exist in the node list but not the edge list.
+        Not unpopular — just unlinked on Wikipedia.
+      </span>
     </div>
 
-    <h2>The network</h2>
-
-    <div class="figure">
-      <img src="../figures/week1_network.png" alt="Marvel Wikipedia network — giant component" />
-      <figcaption>Giant component (277 nodes). Node size and colour scale with in-degree. Top 15 hubs are labelled.</figcaption>
+    <div class="isolates-grid">
+      <div class="isolate-card">Baymax<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Bird-Brain<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Black Fox (Robert Paine)<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Brain Drain<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Breeze Barton<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Captain Midlands<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Charcoal<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Father Time<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Happy Sam Sawyer<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Hellfire (J.T. Slade)<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Illuminator<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Miracleman<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Ogre<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Sean and Chris<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Solarman<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Super Rabbit<span>in: 0 · out: 0</span></div>
+      <div class="isolate-card">Yo-Yo Rodriguez<span>in: 0 · out: 0</span></div>
     </div>
 
-    <h2>The giant component — and the islands</h2>
     <p>
-      277 of 303 heroes sit in one giant connected component. Outside it: 18 smaller components —
-      one cluster of 9, and 17 true isolates.
+      Some of these are genuinely obscure — 1940s one-appearance anthology characters.
+      But others are not. Miracleman has a rich publication history but a legally contested
+      Wikipedia presence, carefully kept separate from mainstream Marvel continuity.
+      Yo-Yo Rodriguez (from the Avengers Initiative) and Baymax (Big Hero 6) have real
+      fan bases — their isolation is a Wikipedia editing artifact, not a measure of cultural weight.
     </p>
-    <p>The isolates are a fascinating list:</p>
-    <ul>
-      <li><strong>Baymax, Super Rabbit, Breeze Barton</strong> — obscure or extremely old characters
-        whose pages exist but were written in isolation from the main Wikipedia link ecosystem.</li>
-      <li><strong>Miracleman</strong> — complex copyright history; his page has been carefully kept
-        separate from the mainstream Marvel continuity on Wikipedia.</li>
-      <li><strong>Yo-Yo Rodriguez, Captain Midlands</strong> — relatively recent or niche characters
-        whose pages haven't been cross-linked yet.</li>
-    </ul>
+
     <p>
-      The cluster of 9 is also worth looking at — a small connected sub-graph floating outside the main network.
-      These are characters who reference each other but not the broader universe, forming their own
-      little pocket continuity in Wikipedia's edit history.
+      The islands are a map of Marvel's forgotten corners and Wikipedia's uneven edit history.
+      They're not noise. They're the part of the dataset the degree distribution can't tell you about.
     </p>
 
     <h2>What surprised us</h2>
+
     <p>
-      The gap between Spider-Man and everyone else. In-degree 106 vs Hulk's 64 — that's not a small lead,
-      that's a different category of node. Spider-Man doesn't just have high centrality; he's become
-      a <em>reference point</em> in how Wikipedia editors contextualize other heroes.
-      His page is the "you are here" marker of the Marvel universe.
+      The gap between Spider-Man and everyone else is larger than we expected.
+      In-degree 106 versus Hulk's 64 versus Wolverine's 60 — that's not a small lead,
+      that's a different order of magnitude of cultural saturation.
+      Spider-Man has become a unit of measurement inside Marvel's Wikipedia ecosystem.
     </p>
+
     <p>
-      We also didn't expect 17 true isolates — characters with no Wikipedia cross-links whatsoever.
-      It's not that they're unpopular; several have real publication histories. It's a reminder that
-      the network reflects how Wikipedia was <em>written</em>, not just what the characters did.
+      We also didn't expect 17 true isolates. The course note says "17 characters have no edge
+      in either direction" and we expected them to be pure noise — but listing them out,
+      several have decades of publication history. The network reflects how Wikipedia was
+      <em>written</em>, not just what Marvel published. That gap is worth remembering every
+      time we interpret a result from this dataset.
     </p>
 
     <h2>Next week</h2>
-    <p>Centrality measures: betweenness, closeness, PageRank. Which heroes are structurally important beyond raw degree?</p>
+
+    <p>
+      Models. We'll compare the Marvel network against an Erdős–Rényi random graph with the same
+      n and m, ask what a random network with our degree sequence looks like, and use null models
+      to figure out which properties of this graph are actually interesting.
+    </p>
+
+    <a href="../index.html" class="back-link">← Back to all posts</a>
   </div>
 
   <footer>
-    <p>DTU 02467 Computational Social Science · 2026 · <a href="https://github.com/Ali0Afif/marvel-network">GitHub</a></p>
+    <p>DTU 02805 Computational Social Science · 2026</p>
+    <a href="https://github.com/Ali0Afif/marvel-network">GitHub →</a>
   </footer>
+
 </body>
 </html>
