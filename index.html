@@ -3,150 +3,133 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Marvel Network — DTU 02805</title>
+  <title>The Marvel Museum — DTU 02805</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
 <nav>
-  <span class="nav-title">Marvel · Network</span>
+  <span class="nav-logo">THE MARVEL MUSEUM</span>
   <div class="nav-links">
-    <a href="posts/week1.html" class="active">W1</a>
-    <a href="#about">About</a>
+    <a href="index.html" class="on">Lobby</a>
+    <a href="posts/week1.html">Exhibition I</a>
     <a href="https://github.com/Ali0Afif/marvel-network" target="_blank">GitHub ↗</a>
   </div>
 </nav>
 
-<!-- ── Hero + D3 network ── -->
-<section class="hero">
-  <svg id="network-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <filter id="glow-filter" x="-80%" y="-80%" width="260%" height="260%">
-        <feGaussianBlur stdDeviation="8" result="blur"/>
-        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-      </filter>
-      <filter id="glow-sm" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="3" result="blur"/>
-        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-      </filter>
-    </defs>
-  </svg>
+<!-- ── Museum Facade ── -->
+<section class="museum-facade">
 
-  <div class="hero-ui">
-    <p class="hero-label">DTU 02805 · Networks · 2026</p>
-    <h1 class="hero-title">303 Heroes.<br>One Graph.</h1>
-    <p class="hero-sub">Mining the Marvel Wikipedia network — one week at a time. Click any node.</p>
-    <div class="hero-search">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="5.5" cy="5.5" r="4"/><path d="M9.5 9.5l3 3"/>
-      </svg>
-      <input id="hero-search-input" type="text" placeholder="Search a hero…" autocomplete="off"/>
-    </div>
+  <div class="facade-gate">
+    <p class="facade-overtitle">DTU 02805 · Computational Social Science · 2026</p>
+    <h1 class="facade-title">THE<br><span>MARVEL</span><br>MUSEUM</h1>
+    <div class="facade-rule"></div>
+    <p class="facade-subtitle">A NETWORK SCIENCE EXHIBITION</p>
+    <p class="facade-tagline">
+      303 Superheroes <span>◆</span> 1,784 Directed Edges <span>◆</span> One Universe
+    </p>
   </div>
 
-  <p class="hero-hint">↓ scroll to explore</p>
-  <div id="net-tooltip"></div>
+  <!-- Atrium network -->
+  <div class="atrium">
+    <p class="atrium-label">MARVEL UNIVERSE MAP &nbsp;·&nbsp; PERMANENT INSTALLATION</p>
+    <div class="atrium-canvas-wrap">
+      <svg id="atrium-svg"></svg>
+      <span class="atrium-corner tl">◆</span>
+      <span class="atrium-corner tr">◆</span>
+      <span class="atrium-corner bl">◆</span>
+      <span class="atrium-corner br">◆</span>
+    </div>
+    <p class="atrium-hint">Click any node to examine &nbsp;·&nbsp; Drag to explore &nbsp;·&nbsp; Scroll to zoom</p>
+  </div>
+
 </section>
 
 <!-- ── Info panel ── -->
 <div class="info-panel" id="info-panel">
-  <button class="panel-close" id="panel-close" aria-label="Close">✕</button>
-  <p class="panel-week-tag">Hero spotlight</p>
-  <h2 class="panel-hero-name" id="panel-name">—</h2>
-  <div class="panel-degree-row">
-    <div class="panel-deg"><span class="num" id="panel-in">—</span><span class="lbl">In-links</span></div>
-    <div class="panel-deg"><span class="num" id="panel-out">—</span><span class="lbl">Out-links</span></div>
-  </div>
-  <p class="panel-connections-label">Connected to</p>
-  <div class="panel-connections" id="panel-connections"></div>
-</div>
-
-<!-- ── Stats bar ── -->
-<div class="stats-bar" id="stats-bar">
-  <div class="stat-cell reveal">
-    <span class="stat-num" data-target="303" id="s-nodes">303</span>
-    <span class="stat-label">Superheroes</span>
-  </div>
-  <div class="stat-cell reveal" style="transition-delay:.1s">
-    <span class="stat-num" data-target="1784" id="s-edges">1,784</span>
-    <span class="stat-label">Directed links</span>
-  </div>
-  <div class="stat-cell reveal" style="transition-delay:.2s">
-    <span class="stat-num red" data-target="106" id="s-spider">106</span>
-    <span class="stat-label">Spider-Man's in-degree</span>
-  </div>
-  <div class="stat-cell reveal" style="transition-delay:.3s">
-    <span class="stat-num" data-target="17" id="s-iso">17</span>
-    <span class="stat-label">Isolated heroes</span>
-  </div>
-</div>
-
-<!-- ── Posts ── -->
-<section class="posts-section">
-  <p class="section-eyebrow">Weekly posts</p>
-
-  <article class="post-card reveal">
-    <div class="post-num">01</div>
-    <div>
-      <p class="post-kicker">September 2026 · Degree distributions · Giant component</p>
-      <div class="post-title"><a href="posts/week1.html">Who Links to Whom — and Why Are Those Different People?</a></div>
-      <p class="post-excerpt">Spider-Man has 106 incoming links and 9 outgoing. Betsy Braddock links to 28 heroes but only 7 link back. One network, two completely different stories. Plus: the 17 heroes the graph forgot.</p>
+  <button class="panel-close" id="panel-close">✕</button>
+  <p class="panel-tag">ARTIFACT RECORD</p>
+  <h2 class="panel-name" id="panel-name">—</h2>
+  <div class="panel-degs">
+    <div class="panel-deg">
+      <span class="n" id="panel-in">—</span>
+      <span class="l">In-links</span>
     </div>
-    <span class="post-arrow">→</span>
-  </article>
-</section>
-
-<!-- ── About ── -->
-<section class="about-section" id="about">
-  <div class="about-inner">
-    <div><h2 class="reveal">About this project</h2></div>
-    <div class="reveal" style="transition-delay:.1s">
-      <p>We're a student group at DTU studying the Wikipedia link structure of 303 Marvel Comics superheroes as part of course 02805. Every week we publish one analysis using that week's network science tools on the frozen dataset.</p>
-      <p>The network above is real — 303 nodes, 1,784 directed edges from the Week 1 snapshot. Node size scales with in-degree. Spider-Man is the large glowing node. Click any hero to explore their connections.</p>
-      <p><a href="https://github.com/Ali0Afif/marvel-network" target="_blank">github.com/Ali0Afif/marvel-network</a></p>
+    <div class="panel-deg">
+      <span class="n" id="panel-out">—</span>
+      <span class="l">Out-links</span>
     </div>
   </div>
+  <p class="panel-conns-label">Connected to</p>
+  <div class="panel-conns" id="panel-conns"></div>
+</div>
+
+<div id="net-tooltip"></div>
+
+<!-- ── Exhibition Directory ── -->
+<section class="exhibition-dir">
+  <p class="dir-heading">EXHIBITION DIRECTORY</p>
+
+  <a href="posts/week1.html" class="exhibition-card reveal">
+    <div class="card-week">I</div>
+    <div class="card-body">
+      <p class="card-tag">SEPTEMBER 2026 &nbsp;·&nbsp; DEGREE DISTRIBUTIONS &nbsp;·&nbsp; GIANT COMPONENT</p>
+      <h2 class="card-title">Who Links to Whom — and Why Are Those Different People?</h2>
+      <p class="card-excerpt">Spider-Man has 106 incoming links and 9 outgoing. Betsy Braddock links to 28 heroes but only 7 link back. One network, two completely different stories. Plus: the 17 heroes the graph forgot.</p>
+    </div>
+    <span class="card-enter">ENTER HALL &nbsp;→</span>
+  </a>
+
 </section>
+
+<!-- ── Museum stats bar ── -->
+<div class="museum-info-bar">
+  <span class="info-bar-item">303 Superheroes</span>
+  <span class="info-bar-item">1,784 Directed Links</span>
+  <span class="info-bar-item">277-Node Giant Component</span>
+  <span class="info-bar-item">17 Isolated Heroes</span>
+</div>
 
 <footer>
   <p>DTU 02805 Computational Social Science · 2026</p>
-  <a href="https://github.com/Ali0Afif/marvel-network" target="_blank">GitHub →</a>
+  <a href="https://github.com/Ali0Afif/marvel-network" target="_blank">GitHub ↗</a>
 </footer>
 
-<!-- ── Scripts ── -->
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="js/network_data.js"></script>
 <script>
 (function () {
-  /* ── UTIL ── */
   const maxIn   = Math.max(...NODES.map(n => n.in));
   const nodeById = {};
   NODES.forEach(n => { nodeById[n.id] = n; });
 
+  function cleanName(s) {
+    return s.replace(' (character)','').replace(' (Marvel Comics)','');
+  }
   function radius(deg) {
-    return Math.max(2.5, Math.pow(deg + 1, 0.52) * 2.1);
+    return Math.max(2, Math.pow(deg + 1, 0.52) * 1.8);
   }
   function nodeColor(deg) {
-    if (deg === 0) return 'rgba(70,70,80,0.45)';
+    if (deg === 0) return 'rgba(50,40,15,0.28)';
     const t = Math.pow(deg / maxIn, 0.48);
-    const r = Math.round(80  + t * (255 - 80));
-    const g = Math.round(30  + t * (31  - 30));
-    const b = Math.round(50  + t * (46  - 50));
-    const a = 0.5 + t * 0.5;
+    const r = Math.round(60  + t * (201 - 60));
+    const g = Math.round(45  + t * (168 - 45));
+    const b = Math.round(15  + t * (76  - 15));
+    const a = 0.32 + t * 0.68;
     return `rgba(${r},${g},${b},${a})`;
   }
 
-  /* ── SETUP SVG ── */
-  const svgEl  = document.getElementById('network-svg');
-  let W = svgEl.clientWidth  || window.innerWidth;
-  let H = svgEl.clientHeight || window.innerHeight;
+  const wrap  = document.querySelector('.atrium-canvas-wrap');
+  const svgEl = document.getElementById('atrium-svg');
+  let W = wrap.clientWidth  || 600;
+  let H = wrap.clientHeight || 360;
 
-  const svg = d3.select(svgEl);
-  const container = svg.append('g').attr('class', 'zoom-container');
+  const svg       = d3.select(svgEl);
+  const container = svg.append('g').attr('class','zoom-container');
 
-  /* ── DATA ── */
   const nodes = NODES.map(n => ({
     ...n,
     x: ((n.x + 1) / 2) * W,
@@ -154,104 +137,85 @@
   }));
   const links = LINKS.map(l => ({ source: l.s, target: l.t }));
 
-  /* ── SIMULATION ── */
   const sim = d3.forceSimulation(nodes)
-    .force('link',      d3.forceLink(links).id(d => d.id).strength(0.12).distance(38))
-    .force('charge',    d3.forceManyBody().strength(d => -60 - d.in * 1.2))
-    .force('collision', d3.forceCollide().radius(d => radius(d.in) + 2.5))
-    .alphaDecay(0.04)
-    .velocityDecay(0.45)
-    .alpha(0.25);  // start partially warmed-up (positions already good)
+    .force('link',      d3.forceLink(links).id(d => d.id).strength(0.08).distance(28))
+    .force('charge',    d3.forceManyBody().strength(d => -38 - d.in * 0.8))
+    .force('collision', d3.forceCollide().radius(d => radius(d.in) + 1.8))
+    .alphaDecay(0.06)
+    .velocityDecay(0.55)
+    .alpha(0.18);
 
-  /* ── DRAW EDGES ── */
-  const edgeG = container.append('g').attr('class', 'edge-g');
+  /* edges */
+  const edgeG = container.append('g');
   const link = edgeG.selectAll('line')
-    .data(links)
-    .join('line')
-    .attr('stroke', 'rgba(255,255,255,0.032)')
-    .attr('stroke-width', 0.7);
+    .data(links).join('line')
+    .attr('stroke', 'rgba(201,168,76,0.045)')
+    .attr('stroke-width', 0.5);
 
-  /* ── DRAW NODE GLOWS ── */
-  const glowG = container.append('g').attr('class', 'glow-g');
-  const topGlow = nodes.filter(n => n.in > 30);
-  const glows = glowG.selectAll('circle').data(topGlow).join('circle')
-    .attr('r', d => radius(d.in) * 3)
-    .attr('fill', d => {
-      const t = Math.pow(d.in / maxIn, 0.6);
-      return `rgba(255,31,46,${0.04 + t * 0.1})`;
-    })
-    .style('animation', 'glow-pulse 3s ease-in-out infinite')
-    .style('animation-delay', (d, i) => (i * 0.4) + 's');
-
-  /* ── DRAW NODES ── */
-  const nodeG = container.append('g').attr('class', 'node-g');
+  /* nodes */
+  const nodeG = container.append('g');
   const node = nodeG.selectAll('circle')
     .data(nodes.sort((a, b) => a.in - b.in))
     .join('circle')
     .attr('r', d => radius(d.in))
     .attr('fill', d => nodeColor(d.in))
-    .attr('filter', d => d.in > 50 ? 'url(#glow-filter)' : d.in > 20 ? 'url(#glow-sm)' : null)
-    .style('cursor', 'pointer')
+    .style('cursor','pointer')
     .call(d3.drag()
-      .on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.15).restart(); d.fx = d.x; d.fy = d.y; })
+      .on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.08).restart(); d.fx = d.x; d.fy = d.y; })
       .on('drag',  (e, d) => { d.fx = e.x; d.fy = e.y; })
       .on('end',   (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; })
     );
 
-  /* ── LABELS for top 12 ── */
-  const labelG = container.append('g').attr('class', 'label-g');
-  const topLabels = nodes.filter(n => n.in > 22).sort((a, b) => b.in - a.in).slice(0, 12);
+  /* labels for top nodes */
+  const labelG  = container.append('g');
+  const topLabels = nodes.filter(n => n.in > 32).sort((a,b) => b.in - a.in).slice(0, 7);
   const labels = labelG.selectAll('text').data(topLabels).join('text')
-    .attr('text-anchor', 'middle')
-    .attr('fill', d => d.in > 60 ? 'rgba(255,255,255,.8)' : 'rgba(255,255,255,.45)')
-    .attr('font-family', 'Space Grotesk, sans-serif')
-    .attr('font-weight', '700')
-    .attr('font-size', d => d.in > 60 ? 11 : 9)
-    .attr('pointer-events', 'none')
-    .text(d => d.name.replace(' (character)','').replace(' (Marvel Comics)',''));
+    .attr('text-anchor','middle')
+    .attr('fill', d => d.in > 60 ? 'rgba(201,168,76,.9)' : 'rgba(201,168,76,.5)')
+    .attr('font-family','Cinzel, serif')
+    .attr('font-weight','700')
+    .attr('font-size', d => d.in > 60 ? 9 : 7)
+    .attr('pointer-events','none')
+    .text(d => cleanName(d.name).split(' ')[0]);
 
-  /* ── TICK ── */
   sim.on('tick', () => {
     link
       .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
       .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
-    node .attr('cx', d => d.x).attr('cy', d => d.y);
-    glows.attr('cx', d => d.x).attr('cy', d => d.y);
-    labels.attr('x', d => d.x).attr('y', d => d.y - radius(d.in) - 5);
+    node.attr('cx', d => d.x).attr('cy', d => d.y);
+    labels.attr('x', d => d.x).attr('y', d => d.y - radius(d.in) - 4);
   });
 
-  /* ── ZOOM ── */
-  const zoom = d3.zoom()
-    .scaleExtent([0.15, 10])
+  /* zoom */
+  const zoom = d3.zoom().scaleExtent([0.18, 10])
     .on('zoom', e => container.attr('transform', e.transform));
   svg.call(zoom).on('dblclick.zoom', null);
 
-  /* ── TOOLTIP ── */
+  /* tooltip */
   const tooltip = document.getElementById('net-tooltip');
   node
     .on('mouseenter', (e, d) => {
       tooltip.style.opacity = '1';
-      tooltip.innerHTML = `<strong style="color:#fff">${d.name}</strong><br>in: ${d.in} &nbsp;·&nbsp; out: ${d.out}`;
+      tooltip.innerHTML = `<strong style="color:var(--gold)">${cleanName(d.name)}</strong><br>in: ${d.in} &nbsp;·&nbsp; out: ${d.out}`;
     })
     .on('mousemove', e => {
-      tooltip.style.left  = (e.clientX + 14) + 'px';
-      tooltip.style.top   = (e.clientY - 12) + 'px';
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top  = (e.clientY - 12) + 'px';
     })
     .on('mouseleave', () => { tooltip.style.opacity = '0'; });
 
-  /* ── CLICK TO HIGHLIGHT ── */
-  let selected = null;
-  const panel      = document.getElementById('info-panel');
-  const panelName  = document.getElementById('panel-name');
-  const panelIn    = document.getElementById('panel-in');
-  const panelOut   = document.getElementById('panel-out');
-  const panelConns = document.getElementById('panel-connections');
+  /* click to highlight */
+  let selected    = null;
+  const panel     = document.getElementById('info-panel');
+  const panelName = document.getElementById('panel-name');
+  const panelIn   = document.getElementById('panel-in');
+  const panelOut  = document.getElementById('panel-out');
+  const panelConns = document.getElementById('panel-conns');
   const panelClose = document.getElementById('panel-close');
 
   function resetHighlight() {
     node.attr('opacity', 1);
-    link.attr('stroke', 'rgba(255,255,255,0.032)').attr('stroke-width', 0.7).attr('opacity', 1);
-    glows.attr('opacity', 1);
+    link.attr('stroke','rgba(201,168,76,0.045)').attr('stroke-width',0.5).attr('opacity',1);
     labels.attr('opacity', 1);
     selected = null;
     panel.classList.remove('open');
@@ -270,37 +234,35 @@
       if (tid === d.id) neighborIds.add(sid);
     });
 
-    node.attr('opacity', n => n.id === d.id || neighborIds.has(n.id) ? 1 : 0.06);
+    node.attr('opacity', n => n.id === d.id || neighborIds.has(n.id) ? 1 : 0.05);
     link
       .attr('opacity', l => {
         const sid = typeof l.source === 'object' ? l.source.id : l.source;
         const tid = typeof l.target === 'object' ? l.target.id : l.target;
-        return (sid === d.id || tid === d.id) ? 1 : 0.02;
+        return (sid === d.id || tid === d.id) ? 1 : 0.01;
       })
       .attr('stroke', l => {
         const sid = typeof l.source === 'object' ? l.source.id : l.source;
         const tid = typeof l.target === 'object' ? l.target.id : l.target;
-        return (sid === d.id || tid === d.id) ? '#ff1f2e' : 'rgba(255,255,255,0.02)';
+        return (sid === d.id || tid === d.id) ? 'rgba(201,168,76,.75)' : 'rgba(201,168,76,.01)';
       })
       .attr('stroke-width', l => {
         const sid = typeof l.source === 'object' ? l.source.id : l.source;
         const tid = typeof l.target === 'object' ? l.target.id : l.target;
-        return (sid === d.id || tid === d.id) ? 1.5 : 0.7;
+        return (sid === d.id || tid === d.id) ? 1.2 : 0.5;
       });
-    glows.attr('opacity', g => g.id === d.id ? 1 : 0.1);
     labels.attr('opacity', l => l.id === d.id || neighborIds.has(l.id) ? 1 : 0.1);
 
-    // Panel
-    panelName.textContent = d.name.replace(' (character)','').replace(' (Marvel Comics)','');
+    panelName.textContent = cleanName(d.name);
     panelIn.textContent   = d.in;
     panelOut.textContent  = d.out;
     panelConns.innerHTML  = '';
-    neighborIds.forEach(nid => {
+    [...neighborIds].slice(0, 30).forEach(nid => {
       const nn = nodeById[nid];
       if (!nn) return;
       const tag = document.createElement('span');
-      tag.className = 'panel-conn-tag';
-      tag.textContent = nn.name.replace(' (character)','').replace(' (Marvel Comics)','');
+      tag.className = 'panel-conn';
+      tag.textContent = cleanName(nn.name);
       tag.onclick = () => {
         const nd = nodes.find(x => x.id === nid);
         if (nd) node.filter(x => x.id === nid).dispatch('click');
@@ -313,58 +275,18 @@
   svg.on('click', resetHighlight);
   panelClose.addEventListener('click', resetHighlight);
 
-  /* ── SEARCH ── */
-  const searchInput = document.getElementById('hero-search-input');
-  searchInput.addEventListener('input', () => {
-    const q = searchInput.value.trim().toLowerCase();
-    if (!q) { resetHighlight(); return; }
-    node.attr('opacity', n => n.name.toLowerCase().includes(q) ? 1 : 0.05);
-    labels.attr('opacity', l => l.name.toLowerCase().includes(q) ? 1 : 0.1);
-    link.attr('opacity', 0.015);
-    panel.classList.remove('open');
-    selected = null;
-  });
-
-  /* ── STATS COUNTER ANIMATION ── */
-  function countUp(el, target, delay = 0) {
-    setTimeout(() => {
-      const dur = 1200;
-      const start = performance.now();
-      function tick(now) {
-        const t = Math.min((now - start) / dur, 1);
-        const ease = 1 - Math.pow(1 - t, 3);
-        el.textContent = Math.round(ease * target).toLocaleString();
-        if (t < 1) requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-    }, delay);
-  }
-
-  const statsObs = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add('in-view');
-      const el = entry.target.querySelector('.stat-num');
-      const t  = parseInt(el.dataset.target);
-      const delay = parseFloat(entry.target.style.transitionDelay || 0) * 1000;
-      countUp(el, t, delay);
-      statsObs.unobserve(entry.target);
-    });
-  }, { threshold: 0.5 });
-  document.querySelectorAll('.stat-cell').forEach(el => statsObs.observe(el));
-
-  /* ── SCROLL REVEAL ── */
-  const revealObs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
-
-  /* ── RESIZE ── */
+  /* resize */
   window.addEventListener('resize', () => {
-    W = svgEl.clientWidth || window.innerWidth;
-    H = svgEl.clientHeight || window.innerHeight;
-    sim.force('center', d3.forceCenter(W/2, H/2)).alpha(0.1).restart();
+    W = wrap.clientWidth || 600;
+    H = wrap.clientHeight || 360;
+    sim.force('center', d3.forceCenter(W/2, H/2)).alpha(0.08).restart();
   });
+
+  /* scroll reveal */
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 })();
 </script>
 </body>
