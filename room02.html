@@ -111,6 +111,10 @@
   </div>
   <svg id="degree-chart"></svg>
 </div>
+<div class="deg-peers" id="deg-peers-panel" style="margin: 0 2rem">
+  <p class="dp-title" id="dp-title">Click a bar to see which heroes have that degree</p>
+  <div class="dp-tags" id="dp-tags"></div>
+</div>
 <div id="chart-tooltip"><span class="ct-k"></span><div class="ct-h"></div></div>
 
 <!-- ══ WHO GETS TALKED ABOUT vs WHO DOES THE TALKING ══ -->
@@ -140,9 +144,20 @@
 <!-- ══ SCATTER PLOT ══ -->
 <div class="scatter-section reveal">
   <h2 class="scatter-title">In-degree vs Out-degree</h2>
-  <p class="scatter-sub">Each point is one hero. X-axis: how many links they make. Y-axis: how many links point to them. Hover to identify characters. Outliers tell the story.</p>
+  <p class="scatter-sub">Each point is one hero. X-axis: how many links they make. Y-axis: how many links point to them. Hover to name a hero. <strong style="color:var(--gold)">Click to spotlight them.</strong> Scroll to zoom. Outliers tell the story.</p>
   <div class="scatter-wrap">
     <svg id="scatter-svg"></svg>
+  </div>
+  <div class="scatter-detail" id="scatter-detail">
+    <div>
+      <p class="sd-label">SELECTED HERO</p>
+      <p class="sd-name" id="sd-name">—</p>
+    </div>
+    <div class="sd-stats">
+      <div class="sd-stat"><span class="n" id="sd-in">—</span><span class="l">In-links</span></div>
+      <div class="sd-stat"><span class="n" id="sd-out">—</span><span class="l">Out-links</span></div>
+      <div class="sd-stat"><span class="n" id="sd-total">—</span><span class="l">Total</span></div>
+    </div>
   </div>
 </div>
 <div id="scatter-tooltip"></div>
@@ -199,33 +214,43 @@
   const msgEl  = document.getElementById('hub-result-msg');
   let guessed  = false;
 
-  shuffled.forEach(hero => {
+  shuffled.forEach((hero, cardIdx) => {
     const actualRank = byIn.indexOf(hero) + 1;
     const card = document.createElement('div');
     card.className = 'hub-card';
     card.dataset.id = hero.id;
+    /* card flip structure */
     card.innerHTML = `
-      <span class="hub-card-rank">#${actualRank} by in-degree</span>
-      <span class="hub-card-name">${cleanName(hero.name)}</span>
-      <span class="hub-card-stat">${hero.in} in · ${hero.out} out</span>
-      <span class="hub-card-verdict">${hero.in === byIn[0].in ? '✓ You picked right!' : ''}</span>
+      <div class="hub-card-inner">
+        <div class="hub-card-front">
+          <span class="hub-card-name">${cleanName(hero.name)}</span>
+          <span class="hub-card-hint">◆ &nbsp;Tap to guess</span>
+        </div>
+        <div class="hub-card-back">
+          <span class="hub-card-rank">#${actualRank} by in-degree</span>
+          <span class="hub-card-name">${cleanName(hero.name)}</span>
+          <span class="hub-card-stat">${hero.in} in &nbsp;·&nbsp; ${hero.out} out</span>
+        </div>
+      </div>
     `;
     card.addEventListener('click', () => {
       if (guessed) return;
       guessed = true;
       const pickedCorrectly = hero.id === byIn[0].id;
 
-      /* mark all as done, reveal ranks + stats */
-      document.querySelectorAll('.hub-card').forEach(c => {
-        c.classList.add('done');
+      /* staggered flip reveal */
+      document.querySelectorAll('.hub-card').forEach((c, idx) => {
         if (c.dataset.id === byIn[0].id) c.classList.add('correct');
-        if (c.dataset.id === hero.id) c.classList.add('picked');
+        if (c.dataset.id === hero.id && !pickedCorrectly) c.classList.add('picked');
+        setTimeout(() => c.classList.add('done'), idx * 90);
       });
 
-      msgEl.textContent = pickedCorrectly
-        ? `✓ Correct! Spider-Man dominates with ${byIn[0].in} incoming links.`
-        : `Spider-Man is #1 with ${byIn[0].in} incoming links — more than twice his nearest rival.`;
-      msgEl.classList.add('show');
+      setTimeout(() => {
+        msgEl.textContent = pickedCorrectly
+          ? `✓ Correct! Spider-Man dominates with ${byIn[0].in} incoming links — the most referenced hero in the network.`
+          : `The answer was Spider-Man (#1 with ${byIn[0].in} incoming links) — more than twice his nearest rival.`;
+        msgEl.classList.add('show');
+      }, shuffled.length * 90 + 300);
     });
     grid.appendChild(card);
   });
@@ -301,12 +326,17 @@
     };
     const ctTip = document.getElementById('chart-tooltip');
 
+    const peersPanel = document.getElementById('deg-peers-panel');
+    const peersTitle = document.getElementById('dp-title');
+    const peersTags  = document.getElementById('dp-tags');
+
     g.selectAll('.bar').data(data).join('rect').attr('class','bar')
       .attr('x', d => xScale(d.k)-barW/2)
       .attr('y', d => { const v=currentScale==='log'?Math.max(d.count,1):d.count; return yScale(v); })
       .attr('width', barW)
       .attr('height', d => { const v=currentScale==='log'?Math.max(d.count,1):d.count; return H-yScale(v); })
       .attr('fill', barColor).attr('rx',1.5)
+      .style('cursor','pointer')
       .on('mouseenter', (ev,d) => {
         ctTip.style.opacity='1';
         const t5=d.heroes.slice(0,4).join(', ')+(d.heroes.length>4?` +${d.heroes.length-4}`:'');
@@ -314,7 +344,12 @@
         ctTip.querySelector('.ct-h').textContent=t5;
       })
       .on('mousemove', ev => { ctTip.style.left=(ev.clientX+14)+'px'; ctTip.style.top=(ev.clientY-10)+'px'; })
-      .on('mouseleave', () => { ctTip.style.opacity='0'; });
+      .on('mouseleave', () => { ctTip.style.opacity='0'; })
+      .on('click', (ev, d) => {
+        peersTitle.textContent = `${currentType==='in'?'IN':'OUT'}-DEGREE k = ${d.k}  ·  ${d.count} HERO${d.count!==1?'ES':''}`;
+        peersTags.innerHTML = d.heroes.map(h => `<span class="dp-tag">${h}</span>`).join('');
+        peersPanel.classList.add('open');
+      });
 
     data.filter(d => d.k>(currentType==='in'?40:18)).forEach(d => {
       const xp=xScale(d.k);
@@ -342,65 +377,114 @@
   else window.addEventListener('load', renderChart);
   window.addEventListener('resize', renderChart);
 
-  /* ══ SCATTER PLOT ══ */
+  /* ══ SCATTER PLOT (zoomable + clickable) ══ */
   function renderScatter() {
     const svgEl = document.getElementById('scatter-svg');
     if (!svgEl) return;
     const totalW = svgEl.clientWidth || 660;
-    const M = {top:24, right:24, bottom:58, left:58};
+    const M = {top:24, right:24, bottom:62, left:62};
     const W = totalW - M.left - M.right;
-    const H = Math.min(420, totalW * 0.6) - M.top - M.bottom;
+    const H = Math.min(440, totalW * 0.62) - M.top - M.bottom;
 
     d3.select(svgEl).selectAll('*').remove();
     d3.select(svgEl).attr('height', H + M.top + M.bottom);
 
-    const g = d3.select(svgEl).append('g').attr('transform',`translate(${M.left},${M.top})`);
+    /* clip path so points don't overflow axes on zoom */
+    const uid = 'scatter-clip';
+    d3.select(svgEl).append('defs').append('clipPath').attr('id', uid)
+      .append('rect').attr('width', W).attr('height', H);
+
+    const root = d3.select(svgEl).append('g').attr('transform',`translate(${M.left},${M.top})`);
     const xMax = d3.max(NODES, n => n.out);
     const yMax = d3.max(NODES, n => n.in);
-    const xScale = d3.scaleLinear().domain([0,xMax*1.05]).range([0,W]);
-    const yScale = d3.scaleLinear().domain([0,yMax*1.05]).range([H,0]);
+    const xScaleBase = d3.scaleLinear().domain([0, xMax * 1.05]).range([0, W]);
+    const yScaleBase = d3.scaleLinear().domain([0, yMax * 1.05]).range([H, 0]);
+    let xS = xScaleBase.copy(), yS = yScaleBase.copy();
 
-    g.append('g').attr('class','scatter-grid')
-      .call(d3.axisLeft(yScale).ticks(5).tickSize(-W).tickFormat('')).select('.domain').remove();
-    g.append('g').attr('class','scatter-axis').attr('transform',`translate(0,${H})`)
-      .call(d3.axisBottom(xScale).ticks(6).tickFormat(d3.format('d')));
-    g.append('g').attr('class','scatter-axis')
-      .call(d3.axisLeft(yScale).ticks(6));
+    const gridG  = root.append('g').attr('class','scatter-grid');
+    const xAxisG = root.append('g').attr('class','scatter-axis').attr('transform',`translate(0,${H})`);
+    const yAxisG = root.append('g').attr('class','scatter-axis');
+    const dataG  = root.append('g').attr('clip-path', `url(#${uid})`);
 
-    g.append('text').attr('x',W/2).attr('y',H+46).attr('text-anchor','middle')
+    function drawAxes() {
+      gridG.call(d3.axisLeft(yS).ticks(5).tickSize(-W).tickFormat('')).select('.domain').remove();
+      xAxisG.call(d3.axisBottom(xS).ticks(6).tickFormat(d3.format('d')));
+      yAxisG.call(d3.axisLeft(yS).ticks(6));
+    }
+    drawAxes();
+
+    root.append('text').attr('x',W/2).attr('y',H+50).attr('text-anchor','middle')
       .attr('fill','rgba(244,239,230,.28)').attr('font-family','Space Mono,monospace').attr('font-size',10)
-      .text('Out-degree →  (how many they link to)');
-    g.append('text').attr('transform','rotate(-90)').attr('x',-H/2).attr('y',-44)
+      .text('Out-degree → (how many they link to)');
+    root.append('text').attr('transform','rotate(-90)').attr('x',-H/2).attr('y',-50)
       .attr('text-anchor','middle').attr('fill','rgba(244,239,230,.28)').attr('font-family','Space Mono,monospace').attr('font-size',10)
-      .text('In-degree ↑  (how many link to them)');
+      .text('In-degree ↑ (how many link to them)');
 
-    const stip = document.getElementById('scatter-tooltip');
+    const stip  = document.getElementById('scatter-tooltip');
+    const sdEl  = document.getElementById('scatter-detail');
+    const sdName  = document.getElementById('sd-name');
+    const sdInEl  = document.getElementById('sd-in');
+    const sdOutEl = document.getElementById('sd-out');
+    const sdTot   = document.getElementById('sd-total');
+    let selectedCircle = null;
 
-    g.selectAll('circle').data(NODES).join('circle')
-      .attr('cx', n => xScale(n.out))
-      .attr('cy', n => yScale(n.in))
-      .attr('r',  n => Math.max(2.5, Math.pow(n.in + n.out + 1, 0.38) * 1.5))
-      .attr('fill', n => {
-        const t = Math.pow((n.in + n.out) / (yMax + xMax), 0.5);
-        return `rgba(${Math.round(60+t*141)},${Math.round(45+t*123)},${Math.round(15+t*61)},${0.35+t*0.55})`;
-      })
-      .style('cursor','default')
+    function fillColor(n) {
+      const t = Math.pow((n.in + n.out) / (yMax + xMax), 0.5);
+      return `rgba(${Math.round(60+t*141)},${Math.round(45+t*123)},${Math.round(15+t*61)},${0.38+t*0.52})`;
+    }
+
+    const circles = dataG.selectAll('circle').data(NODES.sort((a,b)=>a.in+a.out-b.in-b.out)).join('circle')
+      .attr('cx', n => xS(n.out)).attr('cy', n => yS(n.in))
+      .attr('r',  n => Math.max(2.8, Math.pow(n.in + n.out + 1, 0.38) * 1.6))
+      .attr('fill', fillColor)
+      .attr('stroke', 'none')
+      .style('cursor','pointer')
       .on('mouseenter', (ev,n) => {
         stip.style.opacity='1';
         stip.innerHTML=`<strong style="color:var(--gold)">${cleanName(n.name)}</strong><br>in: ${n.in} &nbsp;·&nbsp; out: ${n.out}`;
       })
       .on('mousemove', ev => { stip.style.left=(ev.clientX+14)+'px'; stip.style.top=(ev.clientY-12)+'px'; })
-      .on('mouseleave', () => { stip.style.opacity='0'; });
+      .on('mouseleave', () => { stip.style.opacity='0'; })
+      .on('click', (ev, n) => {
+        ev.stopPropagation();
+        /* unhighlight previous */
+        if (selectedCircle) d3.select(selectedCircle).attr('stroke','none').attr('r', dd => Math.max(2.8, Math.pow(dd.in+dd.out+1,0.38)*1.6));
+        selectedCircle = ev.currentTarget;
+        d3.select(selectedCircle).attr('stroke','var(--gold)').attr('stroke-width',1.5).attr('r', Math.max(4.5, Math.pow(n.in+n.out+1,0.38)*2));
 
-    /* label notable outliers */
-    const outliers = NODES.filter(n => n.in > 40 || n.out > 16);
-    outliers.forEach(n => {
-      g.append('text')
-        .attr('x', xScale(n.out)+5).attr('y', yScale(n.in)-4)
-        .attr('fill','rgba(201,168,76,.72)').attr('font-family','Space Grotesk,sans-serif')
-        .attr('font-size',8).attr('font-weight','600').attr('pointer-events','none')
-        .text(cleanName(n.name).split(' ')[0]);
+        sdName.textContent    = cleanName(n.name);
+        sdInEl.textContent    = n.in;
+        sdOutEl.textContent   = n.out;
+        sdTot.textContent     = n.in + n.out;
+        sdEl.classList.add('open');
+      });
+
+    /* reset selection on background click */
+    d3.select(svgEl).on('click', () => {
+      if (selectedCircle) { d3.select(selectedCircle).attr('stroke','none').attr('r', dd => Math.max(2.8, Math.pow(dd.in+dd.out+1,0.38)*1.6)); selectedCircle=null; }
+      sdEl.classList.remove('open');
     });
+
+    /* labels for notable outliers */
+    const outliers = NODES.filter(n => n.in > 40 || n.out > 17);
+    const labelTexts = dataG.selectAll('.scatter-lbl').data(outliers).join('text')
+      .attr('class','scatter-lbl')
+      .attr('x', n => xS(n.out)+6).attr('y', n => yS(n.in)-4)
+      .attr('fill','rgba(201,168,76,.72)').attr('font-family','Space Grotesk,sans-serif')
+      .attr('font-size',8).attr('font-weight','600').attr('pointer-events','none')
+      .text(n => cleanName(n.name).split(' ')[0]);
+
+    /* zoom + pan */
+    const zoom = d3.zoom().scaleExtent([0.8, 20])
+      .filter(e => e.type !== 'dblclick')
+      .on('zoom', function(event) {
+        xS = event.transform.rescaleX(xScaleBase);
+        yS = event.transform.rescaleY(yScaleBase);
+        drawAxes();
+        circles.attr('cx', n => xS(n.out)).attr('cy', n => yS(n.in));
+        labelTexts.attr('x', n => xS(n.out)+6).attr('y', n => yS(n.in)-4);
+      });
+    d3.select(svgEl).call(zoom);
   }
 
   if (document.readyState==='complete') renderScatter();

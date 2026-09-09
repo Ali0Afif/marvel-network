@@ -85,6 +85,7 @@
     <input id="char-search" type="text" placeholder="e.g. Wolverine, Thor, Black Widow…" autocomplete="off"/>
     <div class="char-suggestions" id="char-suggestions"></div>
   </div>
+  <button class="random-btn" id="btn-random-hero">⚄ &nbsp;RANDOM HERO</button>
 
   <!-- Paradox display -->
   <div class="paradox-display" id="paradox-display">
@@ -106,6 +107,14 @@
   <div class="paradox-verdict" id="paradox-verdict">
     <p class="pv-result" id="pv-result">—</p>
     <p class="pv-text" id="pv-text">—</p>
+  </div>
+
+  <div class="paradox-percentile" id="paradox-percentile">
+    <p class="pp-label">POPULARITY PERCENTILE</p>
+    <div class="pp-bar-wrap">
+      <div class="pp-bar-fill" id="pp-bar-fill"></div>
+    </div>
+    <p class="pp-pct-text" id="pp-pct-text"></p>
   </div>
 
   <div class="paradox-friends" id="paradox-friends">
@@ -172,53 +181,77 @@
   const nodeById = {};
   NODES.forEach(n => { nodeById[n.id] = n; });
 
-  const neighbors = {}; /* undirected adjacency list */
+  const neighbors = {};
   NODES.forEach(n => { neighbors[n.id] = new Set(); });
   LINKS.forEach(l => {
     if (neighbors[l.s]) neighbors[l.s].add(l.t);
     if (neighbors[l.t]) neighbors[l.t].add(l.s);
   });
 
+  /* sorted in-degree list for percentile calc */
+  const sortedByIn = [...NODES].sort((a,b) => a.in - b.in);
+  const byIn       = [...NODES].sort((a,b) => b.in - a.in);
+
   function computeParadox(nodeId) {
     const node   = nodeById[nodeId];
     const nbrs   = [...(neighbors[nodeId] || [])];
     if (nbrs.length === 0) return null;
 
-    const myIn   = node.in;
+    const myIn      = node.in;
     const friendsIn = nbrs.map(nid => nodeById[nid]?.in || 0);
-    const avgIn  = friendsIn.reduce((a,b) => a+b, 0) / friendsIn.length;
+    const avgIn     = friendsIn.reduce((a,b) => a+b, 0) / friendsIn.length;
 
     const topFriends = nbrs
       .map(nid => nodeById[nid]).filter(Boolean)
       .sort((a,b) => b.in - a.in)
       .slice(0, 6);
 
+    /* percentile: fraction of nodes with in-degree ≤ mine */
+    const belowOrEqual = sortedByIn.filter(n => n.in <= myIn).length;
+    const percentile   = Math.round((belowOrEqual / NODES.length) * 100);
+
     return {
       myIn,
       avgIn: Math.round(avgIn * 10) / 10,
       friendCount: nbrs.length,
       holds: avgIn > myIn,
-      topFriends
+      topFriends,
+      percentile
     };
   }
 
+  /* ── Animated countUp ───────────────────────────────── */
+  function countUp(el, target, dur, isFloat) {
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const v = ease * target;
+      el.textContent = isFloat ? v.toFixed(1) : Math.round(v).toString();
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = isFloat ? target.toFixed(1) : target.toString();
+    }
+    requestAnimationFrame(tick);
+  }
+
   /* ── Search/dropdown ────────────────────────────────── */
-  const searchEl   = document.getElementById('char-search');
-  const suggestEl  = document.getElementById('char-suggestions');
+  const searchEl     = document.getElementById('char-search');
+  const suggestEl    = document.getElementById('char-suggestions');
   const sortedByName = [...NODES].sort((a,b) => cleanName(a.name).localeCompare(cleanName(b.name)));
+  /* connected nodes only (for random hero — exclude isolates) */
+  const connected    = NODES.filter(n => (neighbors[n.id]?.size || 0) > 0);
 
   searchEl.addEventListener('input', () => {
     const q = searchEl.value.trim().toLowerCase();
     suggestEl.innerHTML = '';
     if (!q) { suggestEl.classList.remove('open'); return; }
 
-    const matches = sortedByName
-      .filter(n => cleanName(n.name).toLowerCase().startsWith(q))
-      .concat(sortedByName.filter(n =>
-        !cleanName(n.name).toLowerCase().startsWith(q) &&
-        cleanName(n.name).toLowerCase().includes(q)
-      ))
-      .slice(0, 12);
+    const starts  = sortedByName.filter(n => cleanName(n.name).toLowerCase().startsWith(q));
+    const includes = sortedByName.filter(n =>
+      !cleanName(n.name).toLowerCase().startsWith(q) &&
+      cleanName(n.name).toLowerCase().includes(q)
+    );
+    const matches = starts.concat(includes).slice(0, 12);
 
     if (matches.length === 0) { suggestEl.classList.remove('open'); return; }
 
@@ -240,6 +273,14 @@
     if (!e.target.closest('.char-input-wrap')) suggestEl.classList.remove('open');
   });
 
+  /* ── Random hero button ─────────────────────────────── */
+  document.getElementById('btn-random-hero').addEventListener('click', () => {
+    const pick = connected[Math.floor(Math.random() * connected.length)];
+    searchEl.value = cleanName(pick.name);
+    suggestEl.classList.remove('open');
+    showParadox(pick.id);
+  });
+
   /* ── Show paradox result ────────────────────────────── */
   function showParadox(nodeId) {
     const result = computeParadox(nodeId);
@@ -249,15 +290,27 @@
     const dispEl    = document.getElementById('paradox-display');
     const verdEl    = document.getElementById('paradox-verdict');
     const friendsEl = document.getElementById('paradox-friends');
+    const pctEl     = document.getElementById('paradox-percentile');
 
-    document.getElementById('pd-you-name').textContent    = cleanName(node.name);
-    document.getElementById('pd-you-num').textContent     = result ? node.in : '—';
+    document.getElementById('pd-you-name').textContent = cleanName(node.name);
     document.getElementById('pd-friends-count').textContent = result
       ? `${result.friendCount} connection${result.friendCount !== 1 ? 's' : ''}`
       : 'No connections';
-    document.getElementById('pd-friends-num').textContent = result ? result.avgIn : '—';
+
+    /* animated numbers */
+    const youNumEl     = document.getElementById('pd-you-num');
+    const friendNumEl  = document.getElementById('pd-friends-num');
+    youNumEl.textContent = '0';
+    friendNumEl.textContent = result ? '0.0' : '—';
 
     dispEl.classList.add('show');
+
+    if (result) {
+      countUp(youNumEl,    node.in,      600, false);
+      countUp(friendNumEl, result.avgIn, 700, true);
+    } else {
+      youNumEl.textContent = node.in;
+    }
 
     if (!result) {
       document.getElementById('pv-result').textContent = 'ISOLATED HERO';
@@ -265,6 +318,7 @@
         `${cleanName(node.name)} has no connections in the network. The paradox cannot be measured.`;
       verdEl.classList.add('show');
       friendsEl.classList.remove('show');
+      pctEl.classList.remove('show');
       return;
     }
 
@@ -285,31 +339,57 @@
     }
     verdEl.classList.add('show');
 
-    /* top friends */
+    /* percentile bar */
+    const pctFill = document.getElementById('pp-bar-fill');
+    const pctText = document.getElementById('pp-pct-text');
+    pctEl.classList.add('show');
+    pctFill.style.width = '0%';
+    pctText.textContent = '';
+    setTimeout(() => {
+      pctFill.style.width = result.percentile + '%';
+      pctText.textContent =
+        `${cleanName(node.name)} is more popular than ${result.percentile}% of all heroes`;
+    }, 80);
+
+    /* top friends — clickable */
     const listEl = document.getElementById('paradox-friends-list');
     listEl.innerHTML = '';
     result.topFriends.forEach((n, i) => {
       const row = document.createElement('div');
-      row.className = 'exhibit-row';
+      row.className = 'exhibit-row clickable';
+      row.title = `Explore ${cleanName(n.name)}'s paradox`;
       row.innerHTML =
         `<span class="ex-rank">${rankStr(i)}</span>` +
         `<span class="ex-name">${cleanName(n.name)}</span>` +
-        `<span class="ex-badge">${n.in} in-links</span>`;
+        `<span class="ex-badge">${n.in} in-links</span>` +
+        `<span class="ex-arrow">→</span>`;
+      row.addEventListener('click', () => {
+        searchEl.value = cleanName(n.name);
+        suggestEl.classList.remove('open');
+        showParadox(n.id);
+        document.querySelector('.char-selector-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
       listEl.appendChild(row);
     });
     friendsEl.classList.add('show');
   }
 
   /* ── Paradox amplifiers ranking ─────────────────────── */
-  const byIn = [...NODES].sort((a,b) => b.in - a.in);
   const ampEl = document.getElementById('paradox-amplifers');
   byIn.slice(0, 10).forEach((n, i) => {
     const row = document.createElement('div');
-    row.className = 'exhibit-row';
+    row.className = 'exhibit-row clickable';
+    row.title = `Explore ${cleanName(n.name)}'s paradox`;
     row.innerHTML =
       `<span class="ex-rank">${rankStr(i)}</span>` +
       `<span class="ex-name">${cleanName(n.name)}</span>` +
-      `<span class="ex-badge">${n.in} in · appears in ${neighbors[n.id]?.size || 0} lists</span>`;
+      `<span class="ex-badge">${n.in} in · appears in ${neighbors[n.id]?.size || 0} lists</span>` +
+      `<span class="ex-arrow">→</span>`;
+    row.addEventListener('click', () => {
+      searchEl.value = cleanName(n.name);
+      showParadox(n.id);
+      document.querySelector('.char-selector-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
     ampEl.appendChild(row);
   });
 

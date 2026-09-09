@@ -104,6 +104,14 @@
   </div>
 
   <div id="net-tooltip"></div>
+
+  <!-- Control bar -->
+  <div class="net-controls">
+    <button class="nc-btn" id="btn-components">◉ &nbsp;HIGHLIGHT COMPONENTS</button>
+    <button class="nc-btn" id="btn-walk">▷ &nbsp;RANDOM WALK</button>
+    <div class="nc-sep"></div>
+    <span class="nc-count" id="nc-count">303 nodes &nbsp;·&nbsp; 1,784 edges</span>
+  </div>
 </div>
 
 <!-- ══ FINDINGS ══ -->
@@ -374,8 +382,7 @@ G.add_edges_from(zip(edges["source"], edges["target"]))
     panel.classList.add('open');
   });
 
-  svg.on('click', reset);
-  panelClose.addEventListener('click', reset);
+  panelClose.addEventListener('click', () => { if (walkActive) stopWalk(); else reset(); });
 
   /* search */
   document.getElementById('net-search').addEventListener('input', function () {
@@ -394,6 +401,137 @@ G.add_edges_from(zip(edges["source"], edges["target"]))
     H = svgEl.clientHeight || window.innerHeight;
     sim.force('center', d3.forceCenter(W/2, H/2)).alpha(0.08).restart();
   });
+
+  /* ══ PRE-COMPUTE COMPONENTS (BFS) ═══════════════════════ */
+  const adjUnd = {};
+  NODES.forEach(n => { adjUnd[n.id] = []; });
+  LINKS.forEach(l => { adjUnd[l.s]?.push(l.t); adjUnd[l.t]?.push(l.s); });
+
+  const compOf = {};
+  const comps  = [];
+  const vis    = new Set();
+  NODES.forEach(n => {
+    if (vis.has(n.id)) return;
+    const comp = [], q = [n.id];
+    while (q.length) {
+      const c = q.shift();
+      if (vis.has(c)) continue;
+      vis.add(c); comp.push(c);
+      adjUnd[c]?.forEach(nb => { if (!vis.has(nb)) q.push(nb); });
+    }
+    comps.push(comp);
+    comp.forEach(id => { compOf[id] = comps.length - 1; });
+  });
+  const giantIdx = comps.reduce((b,c,i) => c.length > comps[b].length ? i : b, 0);
+
+  function componentColor(d) {
+    const ci = compOf[d.id];
+    if (ci === giantIdx) return nodeColor(d.in);
+    if (comps[ci]?.length > 1) return 'rgba(100,80,200,0.45)';
+    return 'rgba(40,38,42,0.5)';
+  }
+
+  /* ══ COMPONENT TOGGLE ════════════════════════════════════ */
+  let compMode = false;
+  document.getElementById('btn-components').addEventListener('click', function () {
+    compMode = !compMode;
+    this.classList.toggle('active', compMode);
+    if (compMode) {
+      node.attr('fill', d => componentColor(d));
+      link.attr('stroke', l => {
+        const sid = typeof l.source==='object'?l.source.id:l.source;
+        const tid = typeof l.target==='object'?l.target.id:l.target;
+        return compOf[sid]===giantIdx && compOf[tid]===giantIdx
+          ? 'rgba(201,168,76,.055)' : 'rgba(100,80,200,.04)';
+      });
+      document.getElementById('nc-count').textContent =
+        `Giant: ${comps[giantIdx].length} &nbsp;·&nbsp; Clusters: ${comps.filter(c=>c.length>1&&comps.indexOf(c)!==giantIdx).length} &nbsp;·&nbsp; Isolated: ${comps.filter(c=>c.length===1).length}`;
+    } else {
+      node.attr('fill', d => nodeColor(d.in));
+      link.attr('stroke','rgba(201,168,76,0.032)');
+      document.getElementById('nc-count').textContent = '303 nodes · 1,784 edges';
+    }
+  });
+
+  /* ══ RANDOM WALK ═════════════════════════════════════════ */
+  let walkActive = false, walkTimer = null, walkId = null;
+  const giantNodeIds = NODES.filter(n => compOf[n.id] === giantIdx && (n.in+n.out) > 0).map(n => n.id);
+
+  function walkStep() {
+    if (!walkId) {
+      walkId = giantNodeIds[Math.floor(Math.random() * giantNodeIds.length)];
+    }
+    const nd = nodes.find(x => x.id === walkId);
+    if (!nd) { stopWalk(); return; }
+
+    /* gather neighbors */
+    const nbrs = new Set();
+    links.forEach(l => {
+      const sid = typeof l.source==='object'?l.source.id:l.source;
+      const tid = typeof l.target==='object'?l.target.id:l.target;
+      if (sid===walkId) nbrs.add(tid);
+      if (tid===walkId) nbrs.add(sid);
+    });
+
+    /* visual highlight */
+    node.attr('opacity', n => n.id===walkId||nbrs.has(n.id) ? 1 : 0.04);
+    link
+      .attr('opacity', l => {
+        const sid=typeof l.source==='object'?l.source.id:l.source;
+        const tid=typeof l.target==='object'?l.target.id:l.target;
+        return (sid===walkId||tid===walkId) ? 1 : 0.01;
+      })
+      .attr('stroke', l => {
+        const sid=typeof l.source==='object'?l.source.id:l.source;
+        const tid=typeof l.target==='object'?l.target.id:l.target;
+        return (sid===walkId||tid===walkId) ? 'rgba(201,168,76,.85)' : 'rgba(201,168,76,.01)';
+      })
+      .attr('stroke-width', l => {
+        const sid=typeof l.source==='object'?l.source.id:l.source;
+        const tid=typeof l.target==='object'?l.target.id:l.target;
+        return (sid===walkId||tid===walkId) ? 2 : 0.7;
+      });
+    labels.attr('opacity', l => l.id===walkId||nbrs.has(l.id) ? 1 : 0.06);
+
+    /* update panel */
+    panelName.textContent = cleanName(nd.name);
+    panelIn.textContent   = nd.in;
+    panelOut.textContent  = nd.out;
+    panel.classList.add('open');
+
+    document.getElementById('nc-count').textContent =
+      `Walking: ${cleanName(nd.name)} &nbsp;·&nbsp; ${nbrs.size} connection${nbrs.size!==1?'s':''}`;
+
+    /* next step: follow a random giant-component neighbor */
+    const giantNbrs = [...nbrs].filter(nid => compOf[nid] === giantIdx);
+    walkId = giantNbrs.length
+      ? giantNbrs[Math.floor(Math.random() * giantNbrs.length)]
+      : giantNodeIds[Math.floor(Math.random() * giantNodeIds.length)];
+  }
+
+  function stopWalk() {
+    clearInterval(walkTimer); walkTimer = null; walkActive = false; walkId = null;
+    document.getElementById('btn-walk').textContent = '▷  RANDOM WALK';
+    document.getElementById('btn-walk').classList.remove('active');
+    reset();
+    document.getElementById('nc-count').textContent = '303 nodes · 1,784 edges';
+  }
+
+  document.getElementById('btn-walk').addEventListener('click', function () {
+    if (walkActive) {
+      stopWalk();
+    } else {
+      walkActive = true;
+      this.textContent = '◼  STOP WALK';
+      this.classList.add('active');
+      selected = null; // clear manual selection
+      walkStep();
+      walkTimer = setInterval(walkStep, 1700);
+    }
+  });
+
+  /* stop walk on manual click */
+  svg.on('click', () => { if (walkActive) stopWalk(); else reset(); });
 
   /* scroll reveal */
   const obs = new IntersectionObserver(entries => {

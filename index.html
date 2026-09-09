@@ -64,9 +64,16 @@
       a different piece of its structure.
     </p>
     <a href="room01.html" class="entrance-cta">ENTER THE MUSEUM &nbsp;→</a>
+    <div class="entrance-stats">
+      <div class="es-stat"><span class="es-num" id="es-nodes">0</span><span class="es-label">Superheroes</span></div>
+      <div class="es-stat"><span class="es-num" id="es-edges">0</span><span class="es-label">Directed Links</span></div>
+      <div class="es-stat"><span class="es-num" id="es-giant">0</span><span class="es-label">Giant Component</span></div>
+      <div class="es-stat"><span class="es-num" id="es-iso">0</span><span class="es-label">Isolated Heroes</span></div>
+    </div>
   </div>
   <p class="entrance-scroll">↓ scroll to explore</p>
 </section>
+<div id="net-tooltip"></div>
 
 <!-- ── What are we exploring ── -->
 <section class="about-strip">
@@ -140,36 +147,84 @@
 <script src="js/network_data.js"></script>
 <script>
 (function () {
-  /* decorative static background network — no simulation, just render positions */
+  const maxIn = Math.max(...NODES.map(n => n.in));
+  function cleanName(s) { return s.replace(' (character)','').replace(' (Marvel Comics)',''); }
+  function nodeColor(deg, a) {
+    if (deg === 0) return `rgba(80,65,25,${a * 0.5})`;
+    const t = Math.pow(deg / maxIn, 0.5);
+    return `rgba(${Math.round(60+t*141)},${Math.round(45+t*123)},${Math.round(15+t*61)},${a})`;
+  }
+
   const svgEl = document.getElementById('entrance-svg');
   const W = svgEl.clientWidth  || window.innerWidth;
   const H = svgEl.clientHeight || window.innerHeight;
-  const maxIn = Math.max(...NODES.map(n => n.in));
-
   const svg = d3.select(svgEl);
 
-  /* edges — just a sample to keep it light */
-  const edgeSample = LINKS.filter((_, i) => i % 3 === 0);
+  const posOf = {};
+  NODES.forEach(n => {
+    posOf[n.id] = { x: ((n.x + 1) / 2) * W, y: ((n.y + 1) / 2) * H };
+  });
+
+  /* edges — sample every 3rd */
   svg.append('g').selectAll('line')
-    .data(edgeSample).join('line')
-    .attr('x1', d => ((NODES.find(n => n.id === d.s)?.x || 0) + 1) / 2 * W)
-    .attr('y1', d => ((NODES.find(n => n.id === d.s)?.y || 0) + 1) / 2 * H)
-    .attr('x2', d => ((NODES.find(n => n.id === d.t)?.x || 0) + 1) / 2 * W)
-    .attr('y2', d => ((NODES.find(n => n.id === d.t)?.y || 0) + 1) / 2 * H)
-    .attr('stroke', 'rgba(201,168,76,0.04)')
+    .data(LINKS.filter((_,i) => i % 3 === 0)).join('line')
+    .attr('x1', d => posOf[d.s]?.x || 0)
+    .attr('y1', d => posOf[d.s]?.y || 0)
+    .attr('x2', d => posOf[d.t]?.x || 0)
+    .attr('y2', d => posOf[d.t]?.y || 0)
+    .attr('stroke', 'rgba(201,168,76,0.035)')
     .attr('stroke-width', 0.5);
 
-  /* nodes */
-  svg.append('g').selectAll('circle')
-    .data(NODES).join('circle')
-    .attr('cx', n => ((n.x + 1) / 2) * W)
-    .attr('cy', n => ((n.y + 1) / 2) * H)
-    .attr('r', n => Math.max(1.2, Math.pow(n.in + 1, 0.5) * 1.4))
-    .attr('fill', n => {
-      if (n.in === 0) return 'rgba(80,65,25,0.22)';
-      const t = Math.pow(n.in / maxIn, 0.5);
-      return `rgba(${Math.round(60+t*141)},${Math.round(45+t*123)},${Math.round(15+t*61)},${0.22+t*0.45})`;
+  /* interactive nodes */
+  const tooltip = document.getElementById('net-tooltip');
+  let hoveredId = null;
+  const circles = svg.append('g').selectAll('circle')
+    .data(NODES.sort((a,b) => a.in - b.in))
+    .join('circle')
+    .attr('cx', n => posOf[n.id].x)
+    .attr('cy', n => posOf[n.id].y)
+    .attr('r', n => Math.max(1.5, Math.pow(n.in + 1, 0.5) * 1.5))
+    .attr('fill', n => nodeColor(n.in, n.in === 0 ? 0.18 : 0.28 + Math.pow(n.in/maxIn, 0.5) * 0.38))
+    .style('cursor', 'pointer')
+    .on('mouseenter', (e, n) => {
+      hoveredId = n.id;
+      tooltip.style.opacity = '1';
+      tooltip.innerHTML = `<strong style="color:var(--gold)">${cleanName(n.name)}</strong><br>in: ${n.in} &nbsp;·&nbsp; out: ${n.out}`;
+      /* highlight neighbors */
+      const nbrs = new Set(LINKS.flatMap(l => l.s===n.id ? [l.t] : l.t===n.id ? [l.s] : []));
+      circles.attr('opacity', d => d.id===n.id || nbrs.has(d.id) ? 1 : 0.12);
+    })
+    .on('mousemove', e => {
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top  = (e.clientY - 12) + 'px';
+    })
+    .on('mouseleave', () => {
+      hoveredId = null;
+      tooltip.style.opacity = '0';
+      circles.attr('opacity', 1);
+    })
+    .on('click', (e, n) => {
+      /* clicking a node navigates to room01 */
+      window.location.href = 'room01.html';
     });
+
+  /* ── Animated stat counters ── */
+  function countUp(el, target, dur, suffix) {
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / dur, 1);
+      const v = Math.round((1 - Math.pow(1 - t, 3)) * target);
+      el.textContent = v.toLocaleString() + (suffix || '');
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  setTimeout(() => {
+    countUp(document.getElementById('es-nodes'), 303, 1000);
+    countUp(document.getElementById('es-edges'), 1784, 1200);
+    countUp(document.getElementById('es-giant'), 277, 1100);
+    countUp(document.getElementById('es-iso'),   17,   800);
+  }, 600);
 
   /* scroll reveal */
   const obs = new IntersectionObserver(entries => {
