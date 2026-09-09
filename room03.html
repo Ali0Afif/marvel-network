@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Room 03: The Popularity Paradox — Marvel Network Museum</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<nav class="top-nav">
+  <span class="nav-logo">THE MARVEL NETWORK MUSEUM</span>
+  <div class="nav-links">
+    <a href="index.html">Entrance</a>
+    <a href="room01.html">Room 01</a>
+    <a href="room02.html">Room 02</a>
+    <a href="room03.html" class="on">Room 03</a>
+  </div>
+</nav>
+
+<div class="museum-map">
+  <span class="mm-label">MUSEUM MAP</span>
+  <div class="mm-stops">
+    <div class="mm-stop">
+      <div class="mm-dot" onclick="location.href='index.html'"></div>
+      <span class="mm-tip">Entrance</span>
+    </div>
+    <div class="mm-line"></div>
+    <div class="mm-stop">
+      <div class="mm-dot" onclick="location.href='room01.html'"></div>
+      <span class="mm-tip">Room 01 · The Network</span>
+    </div>
+    <div class="mm-line"></div>
+    <div class="mm-stop">
+      <div class="mm-dot" onclick="location.href='room02.html'"></div>
+      <span class="mm-tip">Room 02 · Hall of Hubs</span>
+    </div>
+    <div class="mm-line"></div>
+    <div class="mm-stop">
+      <div class="mm-dot active"></div>
+      <span class="mm-tip">Room 03 · Popularity Paradox</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ROOM HEADER ══ -->
+<section class="room-header">
+  <div class="rh-ghost">03</div>
+  <div class="rh-decoration"></div>
+  <p class="rh-label">ROOM 03 &nbsp;·&nbsp; THE MARVEL NETWORK MUSEUM</p>
+  <h1 class="rh-title">THE POPULARITY<br>PARADOX</h1>
+  <p class="rh-sub">Are your friends more popular than you? The mathematics of the friendship paradox, applied to 303 Marvel heroes.</p>
+  <div class="rh-vert-line"></div>
+  <p class="rh-scroll-hint">↓ scroll to discover</p>
+</section>
+
+<!-- ══ INTRODUCTION ══ -->
+<section class="prose reveal">
+  <p>Imagine you are a Marvel superhero. You know a number of other characters —
+  some by alliance, some by rivalry, all by the network of Wikipedia links.
+  Now here is a strange question:</p>
+
+  <div class="finding-block" style="margin: 1.5rem 0">
+    <p class="fb-label">THE PARADOX</p>
+    <h2 class="fb-title">ON AVERAGE, YOUR CONNECTIONS ARE MORE CONNECTED THAN YOU.</h2>
+  </div>
+
+  <p>This is the <em>friendship paradox</em> — a mathematical property of almost every real network.
+  It occurs because hubs (highly connected nodes) appear in many people's friend lists,
+  pulling the average up. Spider-Man is everyone's neighbor. That skews the math.</p>
+
+  <p>Below, pick any Marvel character. We will calculate their in-degree — how popular they are —
+  and compare it against the average popularity of everyone they connect with.
+  Most of the time, their connections will win.</p>
+</section>
+
+<!-- ══ CHARACTER SELECTOR ══ -->
+<div class="char-selector-section">
+  <h2 class="char-selector-title">CHOOSE YOUR SUPERHERO</h2>
+  <p class="char-selector-sub">Type a character's name. Select from the dropdown. The paradox unfolds.</p>
+
+  <div class="char-input-wrap">
+    <input id="char-search" type="text" placeholder="e.g. Wolverine, Thor, Black Widow…" autocomplete="off"/>
+    <div class="char-suggestions" id="char-suggestions"></div>
+  </div>
+
+  <!-- Paradox display -->
+  <div class="paradox-display" id="paradox-display">
+    <div class="pd-card" id="pd-you">
+      <p class="pd-label">YOUR CHARACTER</p>
+      <p class="pd-hero-name" id="pd-you-name">—</p>
+      <p class="pd-num" id="pd-you-num">—</p>
+      <p class="pd-sub">in-degree</p>
+    </div>
+    <div class="pd-vs">vs</div>
+    <div class="pd-card" id="pd-friends">
+      <p class="pd-label">AVG. OF THEIR CONNECTIONS</p>
+      <p class="pd-hero-name" id="pd-friends-count">—</p>
+      <p class="pd-num" id="pd-friends-num">—</p>
+      <p class="pd-sub">avg in-degree</p>
+    </div>
+  </div>
+
+  <div class="paradox-verdict" id="paradox-verdict">
+    <p class="pv-result" id="pv-result">—</p>
+    <p class="pv-text" id="pv-text">—</p>
+  </div>
+
+  <div class="paradox-friends" id="paradox-friends">
+    <p class="pf-label">MOST POPULAR CONNECTIONS</p>
+    <div id="paradox-friends-list"></div>
+  </div>
+</div>
+
+<!-- ══ WHO ARE THE POPULAR FRIENDS? ══ -->
+<section class="prose reveal">
+  <h3>Who are the "popular friends"?</h3>
+  <p>The characters who most strongly drive the paradox are the hubs — the Spider-Mans and Hulks
+  who appear in many connections' lists. Whenever they are your neighbor, they pull your average up.
+  That is why the paradox is not a coincidence: it is a structural property of any network
+  where degree distribution is skewed.</p>
+</section>
+
+<div class="rank-header reveal">
+  <span class="rank-header-label">HIGHEST PARADOX AMPLIFIERS &nbsp;·&nbsp; TOP IN-DEGREE</span>
+  <div class="rank-header-rule"></div>
+  <span class="rank-header-label">THE POPULAR FRIENDS</span>
+</div>
+<div id="paradox-amplifers"></div>
+
+<!-- ══ FINAL FINDING ══ -->
+<div class="finding-block reveal" style="max-width:var(--max); margin: 3rem auto 0 2rem">
+  <p class="fb-label">FINDING 03</p>
+  <h2 class="fb-title">IS THERE A SUPERHERO NOBODY OUT-POPULARS?</h2>
+</div>
+
+<section class="prose reveal">
+  <p>Yes — and it is Spider-Man. With 106 incoming links, the probability that any character
+  has more popular connections than Spider-Man himself approaches zero.
+  He is not just a hub. He is the paradox personified.</p>
+
+  <p>The friendship paradox holds for the vast majority of Marvel heroes.
+  The rare exceptions — heroes whose connections are <em>less</em> connected than themselves —
+  are the ones who link primarily to each other and to isolated characters, not to the great hubs.
+  Find them with the selector above.</p>
+</section>
+
+<!-- ══ RETURN ══ -->
+<section class="next-room reveal">
+  <p class="nr-overtitle">END OF CURRENT EXHIBITIONS</p>
+  <h2 class="nr-title">MORE ROOMS COMING WEEKLY</h2>
+  <p class="nr-sub">We add a new exhibition every week throughout the course. Return to the entrance to see what's opened.</p>
+  <a href="index.html" class="nr-btn">← RETURN TO ENTRANCE</a>
+</section>
+
+<footer>
+  <p>DTU 02805 Computational Social Science · 2026</p>
+  <a href="https://github.com/Ali0Afif/marvel-network" target="_blank">GitHub ↗</a>
+</footer>
+
+<script src="js/network_data.js"></script>
+<script>
+(function () {
+  function cleanName(s) {
+    return s.replace(' (character)','').replace(' (Marvel Comics)','');
+  }
+  function rankStr(i) { return i < 9 ? `0${i+1}` : `${i+1}`; }
+
+  /* ── Build adjacency lookup ─────────────────────────── */
+  const nodeById = {};
+  NODES.forEach(n => { nodeById[n.id] = n; });
+
+  const neighbors = {}; /* undirected adjacency list */
+  NODES.forEach(n => { neighbors[n.id] = new Set(); });
+  LINKS.forEach(l => {
+    if (neighbors[l.s]) neighbors[l.s].add(l.t);
+    if (neighbors[l.t]) neighbors[l.t].add(l.s);
+  });
+
+  function computeParadox(nodeId) {
+    const node   = nodeById[nodeId];
+    const nbrs   = [...(neighbors[nodeId] || [])];
+    if (nbrs.length === 0) return null;
+
+    const myIn   = node.in;
+    const friendsIn = nbrs.map(nid => nodeById[nid]?.in || 0);
+    const avgIn  = friendsIn.reduce((a,b) => a+b, 0) / friendsIn.length;
+
+    const topFriends = nbrs
+      .map(nid => nodeById[nid]).filter(Boolean)
+      .sort((a,b) => b.in - a.in)
+      .slice(0, 6);
+
+    return {
+      myIn,
+      avgIn: Math.round(avgIn * 10) / 10,
+      friendCount: nbrs.length,
+      holds: avgIn > myIn,
+      topFriends
+    };
+  }
+
+  /* ── Search/dropdown ────────────────────────────────── */
+  const searchEl   = document.getElementById('char-search');
+  const suggestEl  = document.getElementById('char-suggestions');
+  const sortedByName = [...NODES].sort((a,b) => cleanName(a.name).localeCompare(cleanName(b.name)));
+
+  searchEl.addEventListener('input', () => {
+    const q = searchEl.value.trim().toLowerCase();
+    suggestEl.innerHTML = '';
+    if (!q) { suggestEl.classList.remove('open'); return; }
+
+    const matches = sortedByName
+      .filter(n => cleanName(n.name).toLowerCase().startsWith(q))
+      .concat(sortedByName.filter(n =>
+        !cleanName(n.name).toLowerCase().startsWith(q) &&
+        cleanName(n.name).toLowerCase().includes(q)
+      ))
+      .slice(0, 12);
+
+    if (matches.length === 0) { suggestEl.classList.remove('open'); return; }
+
+    matches.forEach(n => {
+      const opt = document.createElement('div');
+      opt.className = 'char-option';
+      opt.textContent = cleanName(n.name);
+      opt.addEventListener('click', () => {
+        searchEl.value = cleanName(n.name);
+        suggestEl.classList.remove('open');
+        showParadox(n.id);
+      });
+      suggestEl.appendChild(opt);
+    });
+    suggestEl.classList.add('open');
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.char-input-wrap')) suggestEl.classList.remove('open');
+  });
+
+  /* ── Show paradox result ────────────────────────────── */
+  function showParadox(nodeId) {
+    const result = computeParadox(nodeId);
+    const node   = nodeById[nodeId];
+    if (!node) return;
+
+    const dispEl    = document.getElementById('paradox-display');
+    const verdEl    = document.getElementById('paradox-verdict');
+    const friendsEl = document.getElementById('paradox-friends');
+
+    document.getElementById('pd-you-name').textContent    = cleanName(node.name);
+    document.getElementById('pd-you-num').textContent     = result ? node.in : '—';
+    document.getElementById('pd-friends-count').textContent = result
+      ? `${result.friendCount} connection${result.friendCount !== 1 ? 's' : ''}`
+      : 'No connections';
+    document.getElementById('pd-friends-num').textContent = result ? result.avgIn : '—';
+
+    dispEl.classList.add('show');
+
+    if (!result) {
+      document.getElementById('pv-result').textContent = 'ISOLATED HERO';
+      document.getElementById('pv-text').textContent =
+        `${cleanName(node.name)} has no connections in the network. The paradox cannot be measured.`;
+      verdEl.classList.add('show');
+      friendsEl.classList.remove('show');
+      return;
+    }
+
+    const margin = Math.abs(result.avgIn - result.myIn).toFixed(1);
+
+    if (result.holds) {
+      document.getElementById('pv-result').textContent = 'THE PARADOX HOLDS.';
+      document.getElementById('pv-text').textContent =
+        `${cleanName(node.name)}'s connections have an average in-degree of ${result.avgIn} ` +
+        `— ${margin} higher than ${cleanName(node.name)}'s own ${result.myIn}. ` +
+        `Your friends are, on average, more popular than you.`;
+    } else {
+      document.getElementById('pv-result').textContent = 'YOU BEAT THE PARADOX.';
+      document.getElementById('pv-text').textContent =
+        `${cleanName(node.name)} is more popular (in-degree ${result.myIn}) than their average connection ` +
+        `(avg ${result.avgIn}). With an in-degree of ${result.myIn}, ${cleanName(node.name)} is ` +
+        `already near the top — a hub who has beaten the math.`;
+    }
+    verdEl.classList.add('show');
+
+    /* top friends */
+    const listEl = document.getElementById('paradox-friends-list');
+    listEl.innerHTML = '';
+    result.topFriends.forEach((n, i) => {
+      const row = document.createElement('div');
+      row.className = 'exhibit-row';
+      row.innerHTML =
+        `<span class="ex-rank">${rankStr(i)}</span>` +
+        `<span class="ex-name">${cleanName(n.name)}</span>` +
+        `<span class="ex-badge">${n.in} in-links</span>`;
+      listEl.appendChild(row);
+    });
+    friendsEl.classList.add('show');
+  }
+
+  /* ── Paradox amplifiers ranking ─────────────────────── */
+  const byIn = [...NODES].sort((a,b) => b.in - a.in);
+  const ampEl = document.getElementById('paradox-amplifers');
+  byIn.slice(0, 10).forEach((n, i) => {
+    const row = document.createElement('div');
+    row.className = 'exhibit-row';
+    row.innerHTML =
+      `<span class="ex-rank">${rankStr(i)}</span>` +
+      `<span class="ex-name">${cleanName(n.name)}</span>` +
+      `<span class="ex-badge">${n.in} in · appears in ${neighbors[n.id]?.size || 0} lists</span>`;
+    ampEl.appendChild(row);
+  });
+
+  /* scroll reveal */
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+})();
+</script>
+</body>
+</html>

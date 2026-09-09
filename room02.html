@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Room 02: Hall of Hubs — Marvel Network Museum</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<nav class="top-nav">
+  <span class="nav-logo">THE MARVEL NETWORK MUSEUM</span>
+  <div class="nav-links">
+    <a href="index.html">Entrance</a>
+    <a href="room01.html">Room 01</a>
+    <a href="room02.html" class="on">Room 02</a>
+    <a href="room03.html">Room 03</a>
+  </div>
+</nav>
+
+<div class="museum-map">
+  <span class="mm-label">MUSEUM MAP</span>
+  <div class="mm-stops">
+    <div class="mm-stop">
+      <div class="mm-dot" onclick="location.href='index.html'"></div>
+      <span class="mm-tip">Entrance</span>
+    </div>
+    <div class="mm-line"></div>
+    <div class="mm-stop">
+      <div class="mm-dot" onclick="location.href='room01.html'"></div>
+      <span class="mm-tip">Room 01 · The Network</span>
+    </div>
+    <div class="mm-line"></div>
+    <div class="mm-stop">
+      <div class="mm-dot active"></div>
+      <span class="mm-tip">Room 02 · Hall of Hubs</span>
+    </div>
+    <div class="mm-line"></div>
+    <div class="mm-stop">
+      <div class="mm-dot" onclick="location.href='room03.html'"></div>
+      <span class="mm-tip">Room 03 · Popularity Paradox</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ROOM HEADER ══ -->
+<section class="room-header">
+  <div class="rh-ghost">02</div>
+  <div class="rh-decoration"></div>
+  <p class="rh-label">ROOM 02 &nbsp;·&nbsp; THE MARVEL NETWORK MUSEUM</p>
+  <h1 class="rh-title">HALL OF<br>HUBS</h1>
+  <p class="rh-sub">Some characters attract a lot more connections than others. But who are the biggest hubs — and what does it mean to be one?</p>
+  <div class="rh-vert-line"></div>
+  <p class="rh-scroll-hint">↓ scroll to explore</p>
+</section>
+
+<!-- ══ GUESS THE HUB GAME ══ -->
+<div class="hub-game" id="hub-game">
+  <h2 class="hub-game-title">GUESS THE HUB</h2>
+  <p class="hub-game-sub">Before we reveal the answer — which character do you think has the most connections in the Marvel Wikipedia network? Make your pick.</p>
+  <div class="hub-cards-grid" id="hub-cards-grid">
+    <!-- populated by JS from real NODES data -->
+  </div>
+  <p class="hub-result-msg" id="hub-result-msg"></p>
+</div>
+
+<!-- ══ HUB RANKINGS ══ -->
+<div class="rank-header reveal">
+  <span class="rank-header-label">LANDMARK HUBS &nbsp;·&nbsp; HIGHEST IN-DEGREE</span>
+  <div class="rank-header-rule"></div>
+  <span class="rank-header-label">THEY GET TALKED ABOUT</span>
+</div>
+<div id="hubs-list"></div>
+
+<!-- Centerpiece -->
+<div class="centerpiece reveal">
+  <div class="centerpiece-frame">
+    <p class="centerpiece-num">EXHIBIT 02-001 &nbsp;·&nbsp; MOST REFERENCED HERO</p>
+    <h2 class="centerpiece-hero">Spider-Man</h2>
+    <div class="centerpiece-stat">
+      <span>106</span>
+      <span class="arrow">↓ in-links</span>
+    </div>
+    <div class="centerpiece-stat">
+      <span>9</span>
+      <span class="arrow">↑ out-links</span>
+    </div>
+    <p class="centerpiece-sub">Referenced by 35% of all Marvel Wikipedia pages.<br>He links back to 9 of them.</p>
+    <p class="centerpiece-accession">ACCESSION NO. MU-02-001 &nbsp;·&nbsp; WIKIPEDIA LINK NETWORK &nbsp;·&nbsp; WEEK 1</p>
+  </div>
+</div>
+
+<!-- ══ DEGREE DISTRIBUTION ══ -->
+<div class="chart-exhibit reveal">
+  <div class="chart-exhibit-label">
+    <span class="plaque">INTERACTIVE DEGREE DISTRIBUTION</span>
+  </div>
+  <div class="chart-controls">
+    <span class="chart-ctrl-label">Degree</span>
+    <div class="btn-group">
+      <button class="deg-btn on" data-type="in">In-degree</button>
+      <button class="deg-btn" data-type="out">Out-degree</button>
+    </div>
+    <span class="chart-ctrl-label">Scale</span>
+    <div class="btn-group">
+      <button class="scale-btn on" data-scale="linear">Linear</button>
+      <button class="scale-btn" data-scale="log">Log–log</button>
+    </div>
+  </div>
+  <svg id="degree-chart"></svg>
+</div>
+<div id="chart-tooltip"><span class="ct-k"></span><div class="ct-h"></div></div>
+
+<!-- ══ WHO GETS TALKED ABOUT vs WHO DOES THE TALKING ══ -->
+<section class="prose reveal">
+  <h3>Who gets talked about — and who does the talking?</h3>
+
+  <div class="stat-callout">
+    <span class="sc-num">106 vs 9</span>
+    <span class="sc-text"><strong>Spider-Man's in vs out degree.</strong>
+    106 heroes reference him. He references 9 back.
+    The gap is not a quirk — it is the whole phenomenon.</span>
+  </div>
+
+  <p>An in-link is <em>conferred</em>: another article's editors decided this character was worth mentioning.
+  An out-link is <em>authored</em>: someone sat down and wrote it into this page.
+  One has no ceiling. The other has a budget. Two different generating mechanisms — two different distributions.</p>
+</section>
+
+<!-- Connectors ranking -->
+<div class="rank-header reveal">
+  <span class="rank-header-label">TOP CONNECTORS &nbsp;·&nbsp; HIGHEST OUT-DEGREE</span>
+  <div class="rank-header-rule"></div>
+  <span class="rank-header-label">THEY DO THE TALKING</span>
+</div>
+<div id="connectors-list"></div>
+
+<!-- ══ SCATTER PLOT ══ -->
+<div class="scatter-section reveal">
+  <h2 class="scatter-title">In-degree vs Out-degree</h2>
+  <p class="scatter-sub">Each point is one hero. X-axis: how many links they make. Y-axis: how many links point to them. Hover to identify characters. Outliers tell the story.</p>
+  <div class="scatter-wrap">
+    <svg id="scatter-svg"></svg>
+  </div>
+</div>
+<div id="scatter-tooltip"></div>
+
+<!-- ══ THE BIG QUESTION ══ -->
+<div class="finding-block reveal" style="max-width:var(--max); margin: 2rem auto 0 2rem">
+  <p class="fb-label">THE BIG QUESTION</p>
+  <h2 class="fb-title">IS BEING POPULAR THE SAME AS BEING WELL CONNECTED?</h2>
+</div>
+
+<section class="prose reveal">
+  <p>The scatter plot shows they are not. Spider-Man is famous <em>and</em> referenced, but he connects outward to very few.
+  Betsy Braddock links to 28 other characters — more than most landmarks — but only 7 link back to her.
+  Popularity is conferred. Connectivity is authored. Different characters, different roles in the same network.</p>
+
+  <p>Spider-Man doesn't just have high centrality — he has become a <em>reference point</em>.
+  Editors invoke him as context for characters who never met him. He is the network's "you are here" sign.</p>
+</section>
+
+<!-- ══ NEXT ROOM ══ -->
+<section class="next-room reveal">
+  <p class="nr-overtitle">NEXT EXHIBITION</p>
+  <h2 class="nr-title">ROOM 03 — THE POPULARITY PARADOX</h2>
+  <p class="nr-sub">Are your friends more popular than you? The mathematics of the friendship paradox, applied to the Marvel universe.</p>
+  <a href="room03.html" class="nr-btn">ENTER ROOM 03 &nbsp;→</a>
+</section>
+
+<footer>
+  <p>DTU 02805 Computational Social Science · 2026</p>
+  <a href="https://github.com/Ali0Afif/marvel-network" target="_blank">GitHub ↗</a>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="js/network_data.js"></script>
+<script>
+(function () {
+  function cleanName(s) {
+    return s.replace(' (character)','').replace(' (Marvel Comics)','');
+  }
+  function rankStr(i) { return i < 9 ? `0${i+1}` : `${i+1}`; }
+
+  /* ══ GUESS THE HUB GAME ══ */
+  const byIn  = [...NODES].sort((a,b) => b.in  - a.in);
+  const byOut = [...NODES].sort((a,b) => b.out - a.out);
+
+  /* Pick 6 heroes: top 5 by in-degree + 1 notable out-degree outlier */
+  const top5  = byIn.slice(0, 5);
+  const wild  = byOut[0]; /* highest out-degree — usually not #1 in-degree */
+  const gameHeroes = [...top5, wild];
+  /* shuffle */
+  const shuffled = [...gameHeroes].sort(() => Math.random() - 0.5);
+
+  const grid   = document.getElementById('hub-cards-grid');
+  const msgEl  = document.getElementById('hub-result-msg');
+  let guessed  = false;
+
+  shuffled.forEach(hero => {
+    const actualRank = byIn.indexOf(hero) + 1;
+    const card = document.createElement('div');
+    card.className = 'hub-card';
+    card.dataset.id = hero.id;
+    card.innerHTML = `
+      <span class="hub-card-rank">#${actualRank} by in-degree</span>
+      <span class="hub-card-name">${cleanName(hero.name)}</span>
+      <span class="hub-card-stat">${hero.in} in · ${hero.out} out</span>
+      <span class="hub-card-verdict">${hero.in === byIn[0].in ? '✓ You picked right!' : ''}</span>
+    `;
+    card.addEventListener('click', () => {
+      if (guessed) return;
+      guessed = true;
+      const pickedCorrectly = hero.id === byIn[0].id;
+
+      /* mark all as done, reveal ranks + stats */
+      document.querySelectorAll('.hub-card').forEach(c => {
+        c.classList.add('done');
+        if (c.dataset.id === byIn[0].id) c.classList.add('correct');
+        if (c.dataset.id === hero.id) c.classList.add('picked');
+      });
+
+      msgEl.textContent = pickedCorrectly
+        ? `✓ Correct! Spider-Man dominates with ${byIn[0].in} incoming links.`
+        : `Spider-Man is #1 with ${byIn[0].in} incoming links — more than twice his nearest rival.`;
+      msgEl.classList.add('show');
+    });
+    grid.appendChild(card);
+  });
+
+  /* ══ HUB RANKINGS ══ */
+  function populateRows(containerId, sorted, badgeFn, limit) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    sorted.slice(0, limit || 10).forEach((n, i) => {
+      const row = document.createElement('div');
+      row.className = 'exhibit-row';
+      row.innerHTML =
+        `<span class="ex-rank">${rankStr(i)}</span>` +
+        `<span class="ex-name">${cleanName(n.name)}</span>` +
+        `<span class="ex-badge">${badgeFn(n)}</span>`;
+      el.appendChild(row);
+    });
+  }
+  populateRows('hubs-list',       byIn,  n => `${n.in} in`, 10);
+  populateRows('connectors-list', byOut, n => `${n.out} out`, 8);
+
+  /* ══ DEGREE DISTRIBUTION CHART ══ */
+  function getDegData(type) {
+    const counts = {}, byDeg = {};
+    NODES.forEach(n => {
+      const d = n[type];
+      counts[d] = (counts[d] || 0) + 1;
+      (byDeg[d] = byDeg[d] || []).push(cleanName(n.name));
+    });
+    return Object.entries(counts).map(([k,c]) => ({k:+k, count:c, heroes:byDeg[+k]})).sort((a,b) => a.k - b.k);
+  }
+
+  let currentType = 'in', currentScale = 'linear';
+
+  function renderChart() {
+    const data  = getDegData(currentType);
+    const svgEl = document.getElementById('degree-chart');
+    if (!svgEl) return;
+    const totalW = svgEl.clientWidth || 660;
+    const M = {top:24, right:24, bottom:52, left:52};
+    const W = totalW - M.left - M.right;
+    const H = 300 - M.top - M.bottom;
+
+    d3.select(svgEl).selectAll('*').remove();
+    d3.select(svgEl).attr('height', 300);
+    const g = d3.select(svgEl).append('g').attr('transform',`translate(${M.left},${M.top})`);
+    const kMax = d3.max(data, d => d.k);
+    const xScale = d3.scaleLinear().domain([0,kMax]).range([0,W]);
+    const yDomain = currentScale==='log'
+      ? [0.5, d3.max(data,d=>d.count)*1.6]
+      : [0, d3.max(data,d=>d.count)*1.1];
+    const yScale = currentScale==='log'
+      ? d3.scaleLog().domain(yDomain).range([H,0]).clamp(true)
+      : d3.scaleLinear().domain(yDomain).range([H,0]);
+
+    g.append('g').attr('class','chart-grid')
+      .call(d3.axisLeft(yScale).ticks(5).tickSize(-W).tickFormat('')).select('.domain').remove();
+    g.append('g').attr('class','chart-axis').attr('transform',`translate(0,${H})`)
+      .call(d3.axisBottom(xScale).ticks(Math.min(10,kMax)).tickFormat(d3.format('d')));
+    g.append('g').attr('class','chart-axis')
+      .call(currentScale==='log' ? d3.axisLeft(yScale).ticks(4,'.0s') : d3.axisLeft(yScale).ticks(5));
+
+    g.append('text').attr('x',W/2).attr('y',H+42).attr('text-anchor','middle')
+      .attr('fill','rgba(244,239,230,.28)').attr('font-family','Space Mono,monospace').attr('font-size',10)
+      .text(`${currentType==='in'?'In':'Out'}-degree (k)`);
+    g.append('text').attr('transform','rotate(-90)').attr('x',-H/2).attr('y',-40)
+      .attr('text-anchor','middle').attr('fill','rgba(244,239,230,.28)').attr('font-family','Space Mono,monospace').attr('font-size',10).text('Count');
+
+    const barW = Math.max(2, W/(kMax+2)*0.82);
+    const barColor = d => {
+      const t = Math.pow(d.k/kMax, 0.5);
+      return `rgba(${Math.round(60+t*141)},${Math.round(45+t*123)},${Math.round(15+t*61)},${0.5+t*0.5})`;
+    };
+    const ctTip = document.getElementById('chart-tooltip');
+
+    g.selectAll('.bar').data(data).join('rect').attr('class','bar')
+      .attr('x', d => xScale(d.k)-barW/2)
+      .attr('y', d => { const v=currentScale==='log'?Math.max(d.count,1):d.count; return yScale(v); })
+      .attr('width', barW)
+      .attr('height', d => { const v=currentScale==='log'?Math.max(d.count,1):d.count; return H-yScale(v); })
+      .attr('fill', barColor).attr('rx',1.5)
+      .on('mouseenter', (ev,d) => {
+        ctTip.style.opacity='1';
+        const t5=d.heroes.slice(0,4).join(', ')+(d.heroes.length>4?` +${d.heroes.length-4}`:'');
+        ctTip.querySelector('.ct-k').textContent=`k = ${d.k}  ·  ${d.count} hero${d.count!==1?'es':''}`;
+        ctTip.querySelector('.ct-h').textContent=t5;
+      })
+      .on('mousemove', ev => { ctTip.style.left=(ev.clientX+14)+'px'; ctTip.style.top=(ev.clientY-10)+'px'; })
+      .on('mouseleave', () => { ctTip.style.opacity='0'; });
+
+    data.filter(d => d.k>(currentType==='in'?40:18)).forEach(d => {
+      const xp=xScale(d.k);
+      const yp=(currentScale==='log'?yScale(Math.max(d.count,1)):yScale(d.count))-8;
+      g.append('text').attr('x',xp).attr('y',yp).attr('text-anchor','middle')
+        .attr('fill','rgba(201,168,76,.85)').attr('font-family','Space Grotesk,sans-serif')
+        .attr('font-size',9).attr('font-weight','700')
+        .text(d.heroes[0].length>12?d.heroes[0].split(' ')[0]:d.heroes[0]);
+    });
+  }
+
+  document.querySelectorAll('.deg-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.deg-btn').forEach(x => x.classList.remove('on'));
+      b.classList.add('on'); currentType=b.dataset.type; renderChart();
+    });
+  });
+  document.querySelectorAll('.scale-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.scale-btn').forEach(x => x.classList.remove('on'));
+      b.classList.add('on'); currentScale=b.dataset.scale; renderChart();
+    });
+  });
+  if (document.readyState==='complete') renderChart();
+  else window.addEventListener('load', renderChart);
+  window.addEventListener('resize', renderChart);
+
+  /* ══ SCATTER PLOT ══ */
+  function renderScatter() {
+    const svgEl = document.getElementById('scatter-svg');
+    if (!svgEl) return;
+    const totalW = svgEl.clientWidth || 660;
+    const M = {top:24, right:24, bottom:58, left:58};
+    const W = totalW - M.left - M.right;
+    const H = Math.min(420, totalW * 0.6) - M.top - M.bottom;
+
+    d3.select(svgEl).selectAll('*').remove();
+    d3.select(svgEl).attr('height', H + M.top + M.bottom);
+
+    const g = d3.select(svgEl).append('g').attr('transform',`translate(${M.left},${M.top})`);
+    const xMax = d3.max(NODES, n => n.out);
+    const yMax = d3.max(NODES, n => n.in);
+    const xScale = d3.scaleLinear().domain([0,xMax*1.05]).range([0,W]);
+    const yScale = d3.scaleLinear().domain([0,yMax*1.05]).range([H,0]);
+
+    g.append('g').attr('class','scatter-grid')
+      .call(d3.axisLeft(yScale).ticks(5).tickSize(-W).tickFormat('')).select('.domain').remove();
+    g.append('g').attr('class','scatter-axis').attr('transform',`translate(0,${H})`)
+      .call(d3.axisBottom(xScale).ticks(6).tickFormat(d3.format('d')));
+    g.append('g').attr('class','scatter-axis')
+      .call(d3.axisLeft(yScale).ticks(6));
+
+    g.append('text').attr('x',W/2).attr('y',H+46).attr('text-anchor','middle')
+      .attr('fill','rgba(244,239,230,.28)').attr('font-family','Space Mono,monospace').attr('font-size',10)
+      .text('Out-degree →  (how many they link to)');
+    g.append('text').attr('transform','rotate(-90)').attr('x',-H/2).attr('y',-44)
+      .attr('text-anchor','middle').attr('fill','rgba(244,239,230,.28)').attr('font-family','Space Mono,monospace').attr('font-size',10)
+      .text('In-degree ↑  (how many link to them)');
+
+    const stip = document.getElementById('scatter-tooltip');
+
+    g.selectAll('circle').data(NODES).join('circle')
+      .attr('cx', n => xScale(n.out))
+      .attr('cy', n => yScale(n.in))
+      .attr('r',  n => Math.max(2.5, Math.pow(n.in + n.out + 1, 0.38) * 1.5))
+      .attr('fill', n => {
+        const t = Math.pow((n.in + n.out) / (yMax + xMax), 0.5);
+        return `rgba(${Math.round(60+t*141)},${Math.round(45+t*123)},${Math.round(15+t*61)},${0.35+t*0.55})`;
+      })
+      .style('cursor','default')
+      .on('mouseenter', (ev,n) => {
+        stip.style.opacity='1';
+        stip.innerHTML=`<strong style="color:var(--gold)">${cleanName(n.name)}</strong><br>in: ${n.in} &nbsp;·&nbsp; out: ${n.out}`;
+      })
+      .on('mousemove', ev => { stip.style.left=(ev.clientX+14)+'px'; stip.style.top=(ev.clientY-12)+'px'; })
+      .on('mouseleave', () => { stip.style.opacity='0'; });
+
+    /* label notable outliers */
+    const outliers = NODES.filter(n => n.in > 40 || n.out > 16);
+    outliers.forEach(n => {
+      g.append('text')
+        .attr('x', xScale(n.out)+5).attr('y', yScale(n.in)-4)
+        .attr('fill','rgba(201,168,76,.72)').attr('font-family','Space Grotesk,sans-serif')
+        .attr('font-size',8).attr('font-weight','600').attr('pointer-events','none')
+        .text(cleanName(n.name).split(' ')[0]);
+    });
+  }
+
+  if (document.readyState==='complete') renderScatter();
+  else window.addEventListener('load', renderScatter);
+  window.addEventListener('resize', renderScatter);
+
+  /* scroll reveal */
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+})();
+</script>
+</body>
+</html>

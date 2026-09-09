@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Room 01: The Network — Marvel Network Museum</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<nav class="top-nav">
+  <span class="nav-logo">THE MARVEL NETWORK MUSEUM</span>
+  <div class="nav-links">
+    <a href="index.html">Entrance</a>
+    <a href="room01.html" class="on">Room 01</a>
+    <a href="room02.html">Room 02</a>
+    <a href="room03.html">Room 03</a>
+  </div>
+</nav>
+
+<div class="museum-map">
+  <span class="mm-label">MUSEUM MAP</span>
+  <div class="mm-stops">
+    <div class="mm-stop">
+      <div class="mm-dot" onclick="location.href='index.html'"></div>
+      <span class="mm-tip">Entrance</span>
+    </div>
+    <div class="mm-line"></div>
+    <div class="mm-stop">
+      <div class="mm-dot active"></div>
+      <span class="mm-tip">Room 01 · The Network</span>
+    </div>
+    <div class="mm-line"></div>
+    <div class="mm-stop">
+      <div class="mm-dot" onclick="location.href='room02.html'"></div>
+      <span class="mm-tip">Room 02 · Hall of Hubs</span>
+    </div>
+    <div class="mm-line"></div>
+    <div class="mm-stop">
+      <div class="mm-dot" onclick="location.href='room03.html'"></div>
+      <span class="mm-tip">Room 03 · Popularity Paradox</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ROOM HEADER ══ -->
+<section class="room-header">
+  <div class="rh-ghost">01</div>
+  <div class="rh-decoration"></div>
+  <p class="rh-label">ROOM 01 &nbsp;·&nbsp; THE MARVEL NETWORK MUSEUM</p>
+  <h1 class="rh-title">THE NETWORK</h1>
+  <p class="rh-sub">Before asking who is important, popular or powerful — we wanted to see the universe itself. Step inside.</p>
+  <div class="rh-vert-line"></div>
+  <p class="rh-scroll-hint">↓ scroll to enter</p>
+</section>
+
+<!-- ══ INTERACTIVE NETWORK EXHIBIT ══ -->
+<div class="network-exhibit">
+  <svg id="room01-svg">
+    <defs>
+      <filter id="glow-lg" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="7" result="blur"/>
+        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+      </filter>
+      <filter id="glow-sm" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- Search -->
+  <div class="net-search-wrap">
+    <input id="net-search" type="text" placeholder="Search a hero…" autocomplete="off"/>
+  </div>
+
+  <!-- Mission cards -->
+  <div class="net-overlay-bl">
+    <div class="mission-card">
+      <p class="mc-num">MISSION 01 &nbsp;·&nbsp; EXPLORE THE NETWORK</p>
+      <h3 class="mc-title">Pick a character.</h3>
+      <p class="mc-body">Click any node. Follow its connections. How far can you travel through the Marvel universe?</p>
+    </div>
+    <div class="mission-card">
+      <p class="mc-num">MISSION 02 &nbsp;·&nbsp; FIND THE GIANT</p>
+      <h3 class="mc-title">Find the giant.</h3>
+      <p class="mc-body">Most of the universe belongs to one enormous connected component. 277 heroes. Can you spot it?</p>
+    </div>
+  </div>
+
+  <!-- Info panel (inside exhibit, absolute) -->
+  <div class="info-panel" id="info-panel">
+    <button class="panel-close" id="panel-close">✕</button>
+    <p class="panel-tag">CHARACTER RECORD</p>
+    <h2 class="panel-name" id="panel-name">—</h2>
+    <div class="panel-degs">
+      <div class="panel-deg"><span class="n" id="panel-in">—</span><span class="l">In-links</span></div>
+      <div class="panel-deg"><span class="n" id="panel-out">—</span><span class="l">Out-links</span></div>
+    </div>
+    <p class="panel-conns-label">Connected to</p>
+    <div class="panel-conns" id="panel-conns"></div>
+  </div>
+
+  <div id="net-tooltip"></div>
+</div>
+
+<!-- ══ FINDINGS ══ -->
+<section class="prose reveal">
+  <div class="stat-callout">
+    <span class="sc-num">91%</span>
+    <span class="sc-text"><strong>Giant component coverage.</strong>
+    277 of 303 heroes form one connected component. The rest fragment into smaller clusters and 17 true isolates.
+    The Marvel universe is almost entirely one conversation.</span>
+  </div>
+
+  <p>Every node is a character from Wikipedia's <em>Category: Marvel Comics superheroes</em>.
+  Every directed edge is a link: page A mentions page B. 303 heroes. 1,784 arrows.
+  The critical detail: add nodes <em>before</em> edges, or NetworkX silently drops the 17 heroes
+  with no links.</p>
+
+  <pre><code>G = nx.DiGraph()
+G.add_nodes_from(nodes["node_id"])      # keep isolates
+G.add_edges_from(zip(edges["source"], edges["target"]))
+# → 303 nodes · 1784 directed edges</code></pre>
+</section>
+
+<!-- Finding block -->
+<div class="finding-block reveal" style="max-width:var(--max); margin: 0 auto 0 2rem">
+  <p class="fb-label">FINDING 01</p>
+  <h2 class="fb-title">THE MARVEL UNIVERSE IS NOT ONE PERFECTLY CONNECTED WORLD.</h2>
+</div>
+
+<section class="prose reveal">
+  <p>Collapse to undirected: 1,784 arrows become 1,434 unique pairs — 350 edges point both ways.
+  Network density: 3%. 97% of possible connections don't exist.
+  Average degree: 9.5. A sparse network — exactly what network science is built to study.</p>
+
+  <p>The giant component contains 277 heroes (91%). There's also a cluster of 9, and 17 true isolates
+  — heroes whose Wikipedia pages carry no links at all, in either direction.</p>
+</section>
+
+<!-- ══ THE LOST HEROES ══ -->
+<div class="rank-header reveal" style="padding-left:2rem; padding-right:2rem">
+  <span class="rank-header-label">HALL OF THE LOST &nbsp;·&nbsp; 17 HEROES THE GRAPH FORGOT</span>
+  <div class="rank-header-rule"></div>
+  <span class="rank-header-label">ISOLATED NODES</span>
+</div>
+
+<section class="prose reveal" style="padding-top:1rem; padding-bottom:1rem">
+  <div class="stat-callout">
+    <span class="sc-num">17</span>
+    <span class="sc-text"><strong>True isolates.</strong>
+    Present in the node list. Absent from every edge.
+    Not obscure — Baymax anchors a Disney franchise, Miracleman has a celebrated publication history.
+    Their isolation reflects how Wikipedia was <em>written</em>, not what Marvel published.</span>
+  </div>
+</section>
+
+<div class="lost-grid reveal" style="margin:0 2rem 2rem">
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Baymax</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Bird-Brain</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Black Fox</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Brain Drain</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Breeze Barton</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Captain Midlands</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Charcoal</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Father Time</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Happy Sam Sawyer</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Hellfire</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Illuminator</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Miracleman</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Ogre</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Sean and Chris</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Solarman</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Super Rabbit</p><p class="lost-status">degree: 0</p></div>
+  <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Yo-Yo Rodriguez</p><p class="lost-status">degree: 0</p></div>
+</div>
+
+<!-- ══ WHAT SURPRISED US ══ -->
+<section class="prose reveal">
+  <h3>What surprised us</h3>
+  <p>The network reflects how Wikipedia was written, not the Marvel universe itself.
+  Several isolates — Baymax, Miracleman, Yo-Yo Rodriguez — have rich publication histories.
+  They are absent from the graph because of how Wikipedia's editors chose to write their pages,
+  not because they are unimportant in the comics.</p>
+  <p>That gap — between the editorial network and the creative universe — matters every time
+  we interpret a result from this dataset. The network is a record of attention, not of story.</p>
+</section>
+
+<!-- ══ NEXT ROOM ══ -->
+<section class="next-room reveal">
+  <p class="nr-overtitle">NEXT EXHIBITION</p>
+  <h2 class="nr-title">ROOM 02 — HALL OF HUBS</h2>
+  <p class="nr-sub">Some characters attract vastly more connections than others. Who are they — and what does it mean?</p>
+  <a href="room02.html" class="nr-btn">ENTER ROOM 02 &nbsp;→</a>
+</section>
+
+<footer>
+  <p>DTU 02805 Computational Social Science · 2026</p>
+  <a href="https://github.com/Ali0Afif/marvel-network" target="_blank">GitHub ↗</a>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="js/network_data.js"></script>
+<script>
+(function () {
+  const maxIn   = Math.max(...NODES.map(n => n.in));
+  const nodeById = {};
+  NODES.forEach(n => { nodeById[n.id] = n; });
+
+  function cleanName(s) {
+    return s.replace(' (character)','').replace(' (Marvel Comics)','');
+  }
+  function radius(deg) { return Math.max(2.5, Math.pow(deg + 1, 0.52) * 2.1); }
+  function nodeColor(deg) {
+    if (deg === 0) return 'rgba(50,40,18,0.35)';
+    const t = Math.pow(deg / maxIn, 0.48);
+    return `rgba(${Math.round(60+t*141)},${Math.round(45+t*123)},${Math.round(15+t*61)},${0.38+t*0.62})`;
+  }
+
+  const svgEl = document.getElementById('room01-svg');
+  let W = svgEl.clientWidth  || window.innerWidth;
+  let H = svgEl.clientHeight || window.innerHeight;
+
+  const svg = d3.select(svgEl);
+  const container = svg.append('g');
+
+  const nodes = NODES.map(n => ({
+    ...n,
+    x: ((n.x + 1) / 2) * W,
+    y: ((n.y + 1) / 2) * H,
+  }));
+  const links = LINKS.map(l => ({ source: l.s, target: l.t }));
+
+  const sim = d3.forceSimulation(nodes)
+    .force('link',      d3.forceLink(links).id(d => d.id).strength(0.12).distance(38))
+    .force('charge',    d3.forceManyBody().strength(d => -60 - d.in * 1.2))
+    .force('collision', d3.forceCollide().radius(d => radius(d.in) + 2.5))
+    .alphaDecay(0.04)
+    .velocityDecay(0.45)
+    .alpha(0.25);
+
+  /* edges */
+  const edgeG = container.append('g');
+  const link  = edgeG.selectAll('line').data(links).join('line')
+    .attr('stroke', 'rgba(201,168,76,0.032)')
+    .attr('stroke-width', 0.7);
+
+  /* glow circles for top nodes */
+  const glowG = container.append('g');
+  const topGlow = nodes.filter(n => n.in > 28);
+  const glows = glowG.selectAll('circle').data(topGlow).join('circle')
+    .attr('r', d => radius(d.in) * 3.2)
+    .attr('fill', d => {
+      const t = Math.pow(d.in / maxIn, 0.6);
+      return `rgba(201,168,76,${0.03 + t * 0.08})`;
+    });
+
+  /* nodes */
+  const nodeG = container.append('g');
+  const node  = nodeG.selectAll('circle')
+    .data(nodes.sort((a,b) => a.in - b.in))
+    .join('circle')
+    .attr('r', d => radius(d.in))
+    .attr('fill', d => nodeColor(d.in))
+    .attr('filter', d => d.in > 50 ? 'url(#glow-lg)' : d.in > 22 ? 'url(#glow-sm)' : null)
+    .style('cursor','pointer')
+    .call(d3.drag()
+      .on('start', (e,d) => { if (!e.active) sim.alphaTarget(0.15).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag',  (e,d) => { d.fx=e.x; d.fy=e.y; })
+      .on('end',   (e,d) => { if (!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+
+  /* labels — top 12 only */
+  const labelG = container.append('g');
+  const topLabels = nodes.filter(n => n.in > 22).sort((a,b) => b.in - a.in).slice(0,12);
+  const labels = labelG.selectAll('text').data(topLabels).join('text')
+    .attr('text-anchor','middle')
+    .attr('fill', d => d.in > 60 ? 'rgba(201,168,76,.9)' : 'rgba(201,168,76,.5)')
+    .attr('font-family','Cinzel, serif')
+    .attr('font-weight','700')
+    .attr('font-size', d => d.in > 60 ? 10 : 8)
+    .attr('pointer-events','none')
+    .text(d => cleanName(d.name).split(' ')[0]);
+
+  sim.on('tick', () => {
+    link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    node.attr('cx', d => d.x).attr('cy', d => d.y);
+    glows.attr('cx', d => d.x).attr('cy', d => d.y);
+    labels.attr('x', d => d.x).attr('y', d => d.y - radius(d.in) - 5);
+  });
+
+  /* zoom */
+  const zoom = d3.zoom().scaleExtent([0.15, 12])
+    .on('zoom', e => container.attr('transform', e.transform));
+  svg.call(zoom).on('dblclick.zoom', null);
+
+  /* tooltip */
+  const tooltip = document.getElementById('net-tooltip');
+  node
+    .on('mouseenter', (e,d) => {
+      tooltip.style.opacity = '1';
+      tooltip.innerHTML = `<strong style="color:var(--gold)">${cleanName(d.name)}</strong><br>in: ${d.in} &nbsp;·&nbsp; out: ${d.out}`;
+    })
+    .on('mousemove', e => { tooltip.style.left=(e.clientX+14)+'px'; tooltip.style.top=(e.clientY-12)+'px'; })
+    .on('mouseleave', () => { tooltip.style.opacity='0'; });
+
+  /* click highlight */
+  let selected = null;
+  const panel      = document.getElementById('info-panel');
+  const panelName  = document.getElementById('panel-name');
+  const panelIn    = document.getElementById('panel-in');
+  const panelOut   = document.getElementById('panel-out');
+  const panelConns = document.getElementById('panel-conns');
+  const panelClose = document.getElementById('panel-close');
+
+  function reset() {
+    node.attr('opacity',1);
+    link.attr('stroke','rgba(201,168,76,0.032)').attr('stroke-width',0.7).attr('opacity',1);
+    glows.attr('opacity',1);
+    labels.attr('opacity',1);
+    selected = null;
+    panel.classList.remove('open');
+  }
+
+  node.on('click', (e,d) => {
+    e.stopPropagation();
+    if (selected === d.id) { reset(); return; }
+    selected = d.id;
+
+    const nbrs = new Set();
+    links.forEach(l => {
+      const sid = typeof l.source==='object'?l.source.id:l.source;
+      const tid = typeof l.target==='object'?l.target.id:l.target;
+      if (sid===d.id) nbrs.add(tid);
+      if (tid===d.id) nbrs.add(sid);
+    });
+
+    node.attr('opacity', n => n.id===d.id||nbrs.has(n.id) ? 1 : 0.05);
+    link
+      .attr('opacity', l => {
+        const sid=typeof l.source==='object'?l.source.id:l.source;
+        const tid=typeof l.target==='object'?l.target.id:l.target;
+        return (sid===d.id||tid===d.id) ? 1 : 0.01;
+      })
+      .attr('stroke', l => {
+        const sid=typeof l.source==='object'?l.source.id:l.source;
+        const tid=typeof l.target==='object'?l.target.id:l.target;
+        return (sid===d.id||tid===d.id) ? 'rgba(201,168,76,.75)' : 'rgba(201,168,76,.01)';
+      })
+      .attr('stroke-width', l => {
+        const sid=typeof l.source==='object'?l.source.id:l.source;
+        const tid=typeof l.target==='object'?l.target.id:l.target;
+        return (sid===d.id||tid===d.id) ? 1.5 : 0.7;
+      });
+    glows.attr('opacity', g => g.id===d.id ? 1 : 0.08);
+    labels.attr('opacity', l => l.id===d.id||nbrs.has(l.id) ? 1 : 0.08);
+
+    panelName.textContent = cleanName(d.name);
+    panelIn.textContent   = d.in;
+    panelOut.textContent  = d.out;
+    panelConns.innerHTML  = '';
+    [...nbrs].slice(0,28).forEach(nid => {
+      const nn = nodeById[nid]; if (!nn) return;
+      const tag = document.createElement('span');
+      tag.className = 'panel-conn';
+      tag.textContent = cleanName(nn.name);
+      tag.onclick = () => node.filter(x => x.id===nid).dispatch('click');
+      panelConns.appendChild(tag);
+    });
+    panel.classList.add('open');
+  });
+
+  svg.on('click', reset);
+  panelClose.addEventListener('click', reset);
+
+  /* search */
+  document.getElementById('net-search').addEventListener('input', function () {
+    const q = this.value.trim().toLowerCase();
+    if (!q) { reset(); return; }
+    node.attr('opacity', n => cleanName(n.name).toLowerCase().includes(q) ? 1 : 0.04);
+    labels.attr('opacity', l => cleanName(l.name).toLowerCase().includes(q) ? 1 : 0.06);
+    link.attr('opacity', 0.01);
+    panel.classList.remove('open');
+    selected = null;
+  });
+
+  /* resize */
+  window.addEventListener('resize', () => {
+    W = svgEl.clientWidth || window.innerWidth;
+    H = svgEl.clientHeight || window.innerHeight;
+    sim.force('center', d3.forceCenter(W/2, H/2)).alpha(0.08).restart();
+  });
+
+  /* scroll reveal */
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+})();
+</script>
+</body>
+</html>

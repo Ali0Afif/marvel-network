@@ -3,289 +3,178 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>The Marvel Museum — DTU 02805</title>
+  <title>The Marvel Network Museum — DTU 02805</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
-<nav>
-  <span class="nav-logo">THE MARVEL MUSEUM</span>
+<nav class="top-nav">
+  <span class="nav-logo">THE MARVEL NETWORK MUSEUM</span>
   <div class="nav-links">
-    <a href="index.html" class="on">Lobby</a>
-    <a href="posts/week1.html">Exhibition I</a>
+    <a href="index.html" class="on">Entrance</a>
+    <a href="room01.html">Room 01</a>
+    <a href="room02.html">Room 02</a>
+    <a href="room03.html">Room 03</a>
     <a href="https://github.com/Ali0Afif/marvel-network" target="_blank">GitHub ↗</a>
   </div>
 </nav>
 
-<!-- ── Museum Facade ── -->
-<section class="museum-facade">
+<!-- ── Museum Map ── -->
+<div class="museum-map">
+  <span class="mm-label">MUSEUM MAP</span>
+  <div class="mm-stops">
+    <div class="mm-stop">
+      <div class="mm-dot active" onclick="location.href='index.html'"></div>
+      <span class="mm-tip">Entrance</span>
+    </div>
+    <div class="mm-line"></div>
+    <div class="mm-stop">
+      <div class="mm-dot" onclick="location.href='room01.html'"></div>
+      <span class="mm-tip">Room 01 · The Network</span>
+    </div>
+    <div class="mm-line"></div>
+    <div class="mm-stop">
+      <div class="mm-dot" onclick="location.href='room02.html'"></div>
+      <span class="mm-tip">Room 02 · Hall of Hubs</span>
+    </div>
+    <div class="mm-line"></div>
+    <div class="mm-stop">
+      <div class="mm-dot" onclick="location.href='room03.html'"></div>
+      <span class="mm-tip">Room 03 · Popularity Paradox</span>
+    </div>
+  </div>
+</div>
 
-  <div class="facade-gate">
-    <p class="facade-overtitle">DTU 02805 · Computational Social Science · 2026</p>
-    <h1 class="facade-title">THE<br><span>MARVEL</span><br>MUSEUM</h1>
-    <div class="facade-rule"></div>
-    <p class="facade-subtitle">A NETWORK SCIENCE EXHIBITION</p>
-    <p class="facade-tagline">
-      303 Superheroes <span>◆</span> 1,784 Directed Edges <span>◆</span> One Universe
+<!-- ── Entrance hero ── -->
+<section class="entrance">
+  <div class="entrance-bg">
+    <svg id="entrance-svg"></svg>
+  </div>
+  <div class="entrance-veil"></div>
+  <div class="entrance-content">
+    <p class="entrance-eyebrow">DTU 02805 · Computational Social Science · 2026</p>
+    <h1 class="entrance-title">THE MARVEL<br><span>NETWORK</span><br>MUSEUM</h1>
+    <p class="entrance-tagline">303 heroes. One tangled universe.</p>
+    <p class="entrance-desc">
+      Welcome to the Marvel Network Museum — an interactive exploration of 303 Marvel superheroes
+      connected through their Wikipedia pages. Behind the characters we know is another universe:
+      a network of links, hubs, communities, and unexpected connections. Each room reveals
+      a different piece of its structure.
     </p>
+    <a href="room01.html" class="entrance-cta">ENTER THE MUSEUM &nbsp;→</a>
   </div>
-
-  <!-- Atrium network -->
-  <div class="atrium">
-    <p class="atrium-label">MARVEL UNIVERSE MAP &nbsp;·&nbsp; PERMANENT INSTALLATION</p>
-    <div class="atrium-canvas-wrap">
-      <svg id="atrium-svg"></svg>
-      <span class="atrium-corner tl">◆</span>
-      <span class="atrium-corner tr">◆</span>
-      <span class="atrium-corner bl">◆</span>
-      <span class="atrium-corner br">◆</span>
-    </div>
-    <p class="atrium-hint">Click any node to examine &nbsp;·&nbsp; Drag to explore &nbsp;·&nbsp; Scroll to zoom</p>
-  </div>
-
+  <p class="entrance-scroll">↓ scroll to explore</p>
 </section>
 
-<!-- ── Info panel ── -->
-<div class="info-panel" id="info-panel">
-  <button class="panel-close" id="panel-close">✕</button>
-  <p class="panel-tag">ARTIFACT RECORD</p>
-  <h2 class="panel-name" id="panel-name">—</h2>
-  <div class="panel-degs">
-    <div class="panel-deg">
-      <span class="n" id="panel-in">—</span>
-      <span class="l">In-links</span>
-    </div>
-    <div class="panel-deg">
-      <span class="n" id="panel-out">—</span>
-      <span class="l">Out-links</span>
-    </div>
-  </div>
-  <p class="panel-conns-label">Connected to</p>
-  <div class="panel-conns" id="panel-conns"></div>
-</div>
-
-<div id="net-tooltip"></div>
-
-<!-- ── Exhibition Directory ── -->
-<section class="exhibition-dir">
-  <p class="dir-heading">EXHIBITION DIRECTORY</p>
-
-  <a href="posts/week1.html" class="exhibition-card reveal">
-    <div class="card-week">I</div>
-    <div class="card-body">
-      <p class="card-tag">SEPTEMBER 2026 &nbsp;·&nbsp; DEGREE DISTRIBUTIONS &nbsp;·&nbsp; GIANT COMPONENT</p>
-      <h2 class="card-title">Who Links to Whom — and Why Are Those Different People?</h2>
-      <p class="card-excerpt">Spider-Man has 106 incoming links and 9 outgoing. Betsy Braddock links to 28 heroes but only 7 link back. One network, two completely different stories. Plus: the 17 heroes the graph forgot.</p>
-    </div>
-    <span class="card-enter">ENTER HALL &nbsp;→</span>
-  </a>
-
+<!-- ── What are we exploring ── -->
+<section class="about-strip">
+  <p class="strip-heading">WHAT ARE WE EXPLORING?</p>
+  <p class="strip-text">
+    We are not mapping the Marvel universe exactly as it exists in the comics.
+    We are mapping how the Marvel universe is <em>represented through Wikipedia links</em>.
+    Every directed edge is an editorial act: one character's Wikipedia page chose to mention another.
+  </p>
+  <p class="strip-text reveal">
+    Every connection tells us something about how these characters are organised, referenced and
+    connected — not by their stories, but by how the internet writes about them.
+  </p>
 </section>
 
-<!-- ── Museum stats bar ── -->
-<div class="museum-info-bar">
-  <span class="info-bar-item">303 Superheroes</span>
-  <span class="info-bar-item">1,784 Directed Links</span>
-  <span class="info-bar-item">277-Node Giant Component</span>
-  <span class="info-bar-item">17 Isolated Heroes</span>
-</div>
+<!-- ── Room cards ── -->
+<section class="rooms-section">
+  <p class="rooms-heading">NEW EXHIBITION EVERY WEEK</p>
+
+  <div class="room-cards-grid">
+
+    <a class="room-card reveal" href="room01.html">
+      <div class="room-num">01</div>
+      <div class="room-body">
+        <p class="room-tag">THE NETWORK</p>
+        <h2 class="room-title">Step inside the Marvel universe</h2>
+        <p class="room-desc">Meet the full network: 303 heroes, 1,784 directed links. Explore the graph, click characters, find the giant component, and discover the 17 heroes the graph forgot.</p>
+      </div>
+      <span class="room-enter">ENTER ROOM &nbsp;→</span>
+    </a>
+
+    <a class="room-card reveal" href="room02.html" style="transition-delay:.08s">
+      <div class="room-num">02</div>
+      <div class="room-body">
+        <p class="room-tag">HALL OF HUBS</p>
+        <h2 class="room-title">Who sits at the centre of the universe?</h2>
+        <p class="room-desc">Some characters attract vastly more connections than others. Guess who holds the most links, compare in-degree to out-degree, and discover the characters who talk about everyone.</p>
+      </div>
+      <span class="room-enter">ENTER ROOM &nbsp;→</span>
+    </a>
+
+    <a class="room-card reveal" href="room03.html" style="transition-delay:.16s">
+      <div class="room-num">03</div>
+      <div class="room-body">
+        <p class="room-tag">THE POPULARITY PARADOX</p>
+        <h2 class="room-title">Are your friends more popular than you?</h2>
+        <p class="room-desc">The friendship paradox: on average, your connections are more connected than you. Pick any superhero and watch the paradox unfold — or find the rare ones who beat it.</p>
+      </div>
+      <span class="room-enter">ENTER ROOM &nbsp;→</span>
+    </a>
+
+    <div class="room-card locked reveal" style="transition-delay:.24s">
+      <div class="room-num">04</div>
+      <div class="room-body">
+        <p class="room-tag">COMING SOON</p>
+        <h2 class="room-title">The next exhibition opens weekly</h2>
+        <p class="room-desc">We add a new room every week throughout the course — turning network analysis into an interactive journey through the Marvel universe.</p>
+      </div>
+      <span class="room-badge">OPENING SOON</span>
+    </div>
+
+  </div>
+</section>
 
 <footer>
   <p>DTU 02805 Computational Social Science · 2026</p>
   <a href="https://github.com/Ali0Afif/marvel-network" target="_blank">GitHub ↗</a>
 </footer>
 
-<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="js/network_data.js"></script>
 <script>
 (function () {
-  const maxIn   = Math.max(...NODES.map(n => n.in));
-  const nodeById = {};
-  NODES.forEach(n => { nodeById[n.id] = n; });
+  /* decorative static background network — no simulation, just render positions */
+  const svgEl = document.getElementById('entrance-svg');
+  const W = svgEl.clientWidth  || window.innerWidth;
+  const H = svgEl.clientHeight || window.innerHeight;
+  const maxIn = Math.max(...NODES.map(n => n.in));
 
-  function cleanName(s) {
-    return s.replace(' (character)','').replace(' (Marvel Comics)','');
-  }
-  function radius(deg) {
-    return Math.max(2, Math.pow(deg + 1, 0.52) * 1.8);
-  }
-  function nodeColor(deg) {
-    if (deg === 0) return 'rgba(50,40,15,0.28)';
-    const t = Math.pow(deg / maxIn, 0.48);
-    const r = Math.round(60  + t * (201 - 60));
-    const g = Math.round(45  + t * (168 - 45));
-    const b = Math.round(15  + t * (76  - 15));
-    const a = 0.32 + t * 0.68;
-    return `rgba(${r},${g},${b},${a})`;
-  }
+  const svg = d3.select(svgEl);
 
-  const wrap  = document.querySelector('.atrium-canvas-wrap');
-  const svgEl = document.getElementById('atrium-svg');
-  let W = wrap.clientWidth  || 600;
-  let H = wrap.clientHeight || 360;
-
-  const svg       = d3.select(svgEl);
-  const container = svg.append('g').attr('class','zoom-container');
-
-  const nodes = NODES.map(n => ({
-    ...n,
-    x: ((n.x + 1) / 2) * W,
-    y: ((n.y + 1) / 2) * H,
-  }));
-  const links = LINKS.map(l => ({ source: l.s, target: l.t }));
-
-  const sim = d3.forceSimulation(nodes)
-    .force('link',      d3.forceLink(links).id(d => d.id).strength(0.08).distance(28))
-    .force('charge',    d3.forceManyBody().strength(d => -38 - d.in * 0.8))
-    .force('collision', d3.forceCollide().radius(d => radius(d.in) + 1.8))
-    .alphaDecay(0.06)
-    .velocityDecay(0.55)
-    .alpha(0.18);
-
-  /* edges */
-  const edgeG = container.append('g');
-  const link = edgeG.selectAll('line')
-    .data(links).join('line')
-    .attr('stroke', 'rgba(201,168,76,0.045)')
+  /* edges — just a sample to keep it light */
+  const edgeSample = LINKS.filter((_, i) => i % 3 === 0);
+  svg.append('g').selectAll('line')
+    .data(edgeSample).join('line')
+    .attr('x1', d => ((NODES.find(n => n.id === d.s)?.x || 0) + 1) / 2 * W)
+    .attr('y1', d => ((NODES.find(n => n.id === d.s)?.y || 0) + 1) / 2 * H)
+    .attr('x2', d => ((NODES.find(n => n.id === d.t)?.x || 0) + 1) / 2 * W)
+    .attr('y2', d => ((NODES.find(n => n.id === d.t)?.y || 0) + 1) / 2 * H)
+    .attr('stroke', 'rgba(201,168,76,0.04)')
     .attr('stroke-width', 0.5);
 
   /* nodes */
-  const nodeG = container.append('g');
-  const node = nodeG.selectAll('circle')
-    .data(nodes.sort((a, b) => a.in - b.in))
-    .join('circle')
-    .attr('r', d => radius(d.in))
-    .attr('fill', d => nodeColor(d.in))
-    .style('cursor','pointer')
-    .call(d3.drag()
-      .on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.08).restart(); d.fx = d.x; d.fy = d.y; })
-      .on('drag',  (e, d) => { d.fx = e.x; d.fy = e.y; })
-      .on('end',   (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; })
-    );
-
-  /* labels for top nodes */
-  const labelG  = container.append('g');
-  const topLabels = nodes.filter(n => n.in > 32).sort((a,b) => b.in - a.in).slice(0, 7);
-  const labels = labelG.selectAll('text').data(topLabels).join('text')
-    .attr('text-anchor','middle')
-    .attr('fill', d => d.in > 60 ? 'rgba(201,168,76,.9)' : 'rgba(201,168,76,.5)')
-    .attr('font-family','Cinzel, serif')
-    .attr('font-weight','700')
-    .attr('font-size', d => d.in > 60 ? 9 : 7)
-    .attr('pointer-events','none')
-    .text(d => cleanName(d.name).split(' ')[0]);
-
-  sim.on('tick', () => {
-    link
-      .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
-      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
-    node.attr('cx', d => d.x).attr('cy', d => d.y);
-    labels.attr('x', d => d.x).attr('y', d => d.y - radius(d.in) - 4);
-  });
-
-  /* zoom */
-  const zoom = d3.zoom().scaleExtent([0.18, 10])
-    .on('zoom', e => container.attr('transform', e.transform));
-  svg.call(zoom).on('dblclick.zoom', null);
-
-  /* tooltip */
-  const tooltip = document.getElementById('net-tooltip');
-  node
-    .on('mouseenter', (e, d) => {
-      tooltip.style.opacity = '1';
-      tooltip.innerHTML = `<strong style="color:var(--gold)">${cleanName(d.name)}</strong><br>in: ${d.in} &nbsp;·&nbsp; out: ${d.out}`;
-    })
-    .on('mousemove', e => {
-      tooltip.style.left = (e.clientX + 14) + 'px';
-      tooltip.style.top  = (e.clientY - 12) + 'px';
-    })
-    .on('mouseleave', () => { tooltip.style.opacity = '0'; });
-
-  /* click to highlight */
-  let selected    = null;
-  const panel     = document.getElementById('info-panel');
-  const panelName = document.getElementById('panel-name');
-  const panelIn   = document.getElementById('panel-in');
-  const panelOut  = document.getElementById('panel-out');
-  const panelConns = document.getElementById('panel-conns');
-  const panelClose = document.getElementById('panel-close');
-
-  function resetHighlight() {
-    node.attr('opacity', 1);
-    link.attr('stroke','rgba(201,168,76,0.045)').attr('stroke-width',0.5).attr('opacity',1);
-    labels.attr('opacity', 1);
-    selected = null;
-    panel.classList.remove('open');
-  }
-
-  node.on('click', (e, d) => {
-    e.stopPropagation();
-    if (selected === d.id) { resetHighlight(); return; }
-    selected = d.id;
-
-    const neighborIds = new Set();
-    links.forEach(l => {
-      const sid = typeof l.source === 'object' ? l.source.id : l.source;
-      const tid = typeof l.target === 'object' ? l.target.id : l.target;
-      if (sid === d.id) neighborIds.add(tid);
-      if (tid === d.id) neighborIds.add(sid);
+  svg.append('g').selectAll('circle')
+    .data(NODES).join('circle')
+    .attr('cx', n => ((n.x + 1) / 2) * W)
+    .attr('cy', n => ((n.y + 1) / 2) * H)
+    .attr('r', n => Math.max(1.2, Math.pow(n.in + 1, 0.5) * 1.4))
+    .attr('fill', n => {
+      if (n.in === 0) return 'rgba(80,65,25,0.22)';
+      const t = Math.pow(n.in / maxIn, 0.5);
+      return `rgba(${Math.round(60+t*141)},${Math.round(45+t*123)},${Math.round(15+t*61)},${0.22+t*0.45})`;
     });
-
-    node.attr('opacity', n => n.id === d.id || neighborIds.has(n.id) ? 1 : 0.05);
-    link
-      .attr('opacity', l => {
-        const sid = typeof l.source === 'object' ? l.source.id : l.source;
-        const tid = typeof l.target === 'object' ? l.target.id : l.target;
-        return (sid === d.id || tid === d.id) ? 1 : 0.01;
-      })
-      .attr('stroke', l => {
-        const sid = typeof l.source === 'object' ? l.source.id : l.source;
-        const tid = typeof l.target === 'object' ? l.target.id : l.target;
-        return (sid === d.id || tid === d.id) ? 'rgba(201,168,76,.75)' : 'rgba(201,168,76,.01)';
-      })
-      .attr('stroke-width', l => {
-        const sid = typeof l.source === 'object' ? l.source.id : l.source;
-        const tid = typeof l.target === 'object' ? l.target.id : l.target;
-        return (sid === d.id || tid === d.id) ? 1.2 : 0.5;
-      });
-    labels.attr('opacity', l => l.id === d.id || neighborIds.has(l.id) ? 1 : 0.1);
-
-    panelName.textContent = cleanName(d.name);
-    panelIn.textContent   = d.in;
-    panelOut.textContent  = d.out;
-    panelConns.innerHTML  = '';
-    [...neighborIds].slice(0, 30).forEach(nid => {
-      const nn = nodeById[nid];
-      if (!nn) return;
-      const tag = document.createElement('span');
-      tag.className = 'panel-conn';
-      tag.textContent = cleanName(nn.name);
-      tag.onclick = () => {
-        const nd = nodes.find(x => x.id === nid);
-        if (nd) node.filter(x => x.id === nid).dispatch('click');
-      };
-      panelConns.appendChild(tag);
-    });
-    panel.classList.add('open');
-  });
-
-  svg.on('click', resetHighlight);
-  panelClose.addEventListener('click', resetHighlight);
-
-  /* resize */
-  window.addEventListener('resize', () => {
-    W = wrap.clientWidth || 600;
-    H = wrap.clientHeight || 360;
-    sim.force('center', d3.forceCenter(W/2, H/2)).alpha(0.08).restart();
-  });
 
   /* scroll reveal */
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
-  }, { threshold: 0.15 });
+  }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 })();
 </script>
