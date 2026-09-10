@@ -53,11 +53,75 @@
   <h1 class="rh-title">THE NETWORK</h1>
   <p class="rh-sub">Before asking who is important, popular or powerful — we wanted to see the universe itself. Step inside.</p>
   <div class="rh-vert-line"></div>
-  <p class="rh-scroll-hint">↓ scroll to enter</p>
+  <p class="rh-scroll-hint">↓ scroll to begin</p>
 </section>
+
+<!-- ══ GALLERY TRACK 1 — The Numbers ══ -->
+<div class="gallery-track" data-screens="1.45">
+  <div class="g-sticky">
+
+    <div class="g-indicator">
+      <div class="g-dots"></div>
+      <div class="g-num">01</div>
+    </div>
+
+    <!-- Exhibit 01: 303 Superheroes -->
+    <div class="g-exhibit">
+      <div class="ex-canvas">
+        <span class="ex-eyebrow">EXHIBIT 01 &nbsp;·&nbsp; THE CAST OF CHARACTERS</span>
+        <div class="ex-stat-block">
+          <span class="ex-giant-num">303</span>
+          <span class="ex-unit-label">SUPERHEROES</span>
+        </div>
+        <p class="ex-description">
+          Every Marvel character from Wikipedia's <em>Category: Marvel Comics superheroes</em>,
+          mapped as a single node. From Spider-Man to the barely remembered —
+          all 303 are here, equal before the graph.
+        </p>
+        <div class="ex-wall-label">
+          <span class="wl-chip">NETWORK PROPERTY</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Total Nodes: 303</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Marvel Wikipedia Network · 2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exhibit 02: 1,784 Directed Links -->
+    <div class="g-exhibit">
+      <div class="ex-canvas">
+        <span class="ex-eyebrow">EXHIBIT 02 &nbsp;·&nbsp; THE CONNECTIONS</span>
+        <div class="ex-stat-block">
+          <span class="ex-giant-num">1,784</span>
+          <span class="ex-unit-label">DIRECTED LINKS</span>
+        </div>
+        <p class="ex-description">
+          Each link is an editorial act — one Wikipedia page chose to mention another character.
+          Not drawn from storylines. Not curated by Marvel.
+          Written by the internet, one edit at a time. Every arrow carries intent.
+        </p>
+        <div class="ex-wall-label">
+          <span class="wl-chip">DIRECTED GRAPH</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Unique Edges: 1,784</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Network Density: 3%</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 <!-- ══ INTERACTIVE NETWORK EXHIBIT ══ -->
 <div class="network-exhibit">
+
+  <!-- Museum frame label -->
+  <div class="exhibit-frame-label">
+    <span class="efl-tag">◻ &nbsp;MAIN EXHIBIT &nbsp;·&nbsp; ROOM 01 &nbsp;·&nbsp; THE NETWORK</span>
+  </div>
+
   <svg id="room01-svg">
     <defs>
       <filter id="glow-lg" x="-80%" y="-80%" width="260%" height="260%">
@@ -114,40 +178,64 @@
   </div>
 </div>
 
-<!-- ══ FINDINGS ══ -->
-<section class="prose reveal">
-  <div class="stat-callout">
-    <span class="sc-num">91%</span>
-    <span class="sc-text"><strong>Giant component coverage.</strong>
-    277 of 303 heroes form one connected component. The rest fragment into smaller clusters and 17 true isolates.
-    The Marvel universe is almost entirely one conversation.</span>
+<!-- ══ GALLERY TRACK 2 — The Findings ══ -->
+<div class="gallery-track" data-screens="1.45">
+  <div class="g-sticky">
+
+    <div class="g-indicator">
+      <div class="g-dots"></div>
+      <div class="g-num">03</div>
+    </div>
+
+    <!-- Exhibit 03: Giant Component -->
+    <div class="g-exhibit">
+      <div class="ex-canvas">
+        <span class="ex-eyebrow">EXHIBIT 03 &nbsp;·&nbsp; THE CONNECTED ONES</span>
+        <div class="ex-stat-block">
+          <span class="ex-giant-num">91<span class="ex-pct">%</span></span>
+          <span class="ex-unit-label">OF ALL HEROES ARE CONNECTED</span>
+        </div>
+        <p class="ex-description">
+          277 out of 303 characters form a single giant component —
+          one continuous web. Navigate from any hero to any other without leaving the network.
+          The Marvel universe is, almost entirely, one conversation.
+        </p>
+        <div class="ex-wall-label">
+          <span class="wl-chip">GIANT COMPONENT</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">277 of 303 nodes</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Undirected · BFS confirmed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exhibit 04: 17 Isolated Heroes -->
+    <div class="g-exhibit">
+      <div class="ex-canvas">
+        <span class="ex-eyebrow">EXHIBIT 04 &nbsp;·&nbsp; THE FORGOTTEN ONES</span>
+        <div class="ex-stat-block">
+          <span class="ex-giant-num">17</span>
+          <span class="ex-unit-label">HEROES WITH NO CONNECTIONS</span>
+        </div>
+        <p class="ex-description">
+          Seventeen characters exist in the node list but appear in no edges.
+          No links in. No links out. Not because they're minor —
+          Baymax anchors a Disney franchise, Miracleman has a celebrated history.
+          Their isolation is editorial. Wikipedia simply never linked them to anyone else.
+        </p>
+        <div class="ex-wall-label">
+          <span class="wl-chip">ISOLATED NODES</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Degree: 0</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Present in the list · Absent from every edge</span>
+        </div>
+      </div>
+    </div>
+
   </div>
-
-  <p>Every node is a character from Wikipedia's <em>Category: Marvel Comics superheroes</em>.
-  Every directed edge is a link: page A mentions page B. 303 heroes. 1,784 arrows.
-  The critical detail: add nodes <em>before</em> edges, or NetworkX silently drops the 17 heroes
-  with no links.</p>
-
-  <pre><code>G = nx.DiGraph()
-G.add_nodes_from(nodes["node_id"])      # keep isolates
-G.add_edges_from(zip(edges["source"], edges["target"]))
-# → 303 nodes · 1784 directed edges</code></pre>
-</section>
-
-<!-- Finding block -->
-<div class="finding-block reveal" style="max-width:var(--max); margin: 0 auto 0 2rem">
-  <p class="fb-label">FINDING 01</p>
-  <h2 class="fb-title">THE MARVEL UNIVERSE IS NOT ONE PERFECTLY CONNECTED WORLD.</h2>
 </div>
-
-<section class="prose reveal">
-  <p>Collapse to undirected: 1,784 arrows become 1,434 unique pairs — 350 edges point both ways.
-  Network density: 3%. 97% of possible connections don't exist.
-  Average degree: 9.5. A sparse network — exactly what network science is built to study.</p>
-
-  <p>The giant component contains 277 heroes (91%). There's also a cluster of 9, and 17 true isolates
-  — heroes whose Wikipedia pages carry no links at all, in either direction.</p>
-</section>
 
 <!-- ══ THE LOST HEROES ══ -->
 <div class="rank-header reveal" style="padding-left:2rem; padding-right:2rem">
@@ -155,16 +243,6 @@ G.add_edges_from(zip(edges["source"], edges["target"]))
   <div class="rank-header-rule"></div>
   <span class="rank-header-label">ISOLATED NODES</span>
 </div>
-
-<section class="prose reveal" style="padding-top:1rem; padding-bottom:1rem">
-  <div class="stat-callout">
-    <span class="sc-num">17</span>
-    <span class="sc-text"><strong>True isolates.</strong>
-    Present in the node list. Absent from every edge.
-    Not obscure — Baymax anchors a Disney franchise, Miracleman has a celebrated publication history.
-    Their isolation reflects how Wikipedia was <em>written</em>, not what Marvel published.</span>
-  </div>
-</section>
 
 <div class="lost-grid reveal" style="margin:0 2rem 2rem">
   <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Baymax</p><p class="lost-status">degree: 0</p></div>
@@ -186,7 +264,6 @@ G.add_edges_from(zip(edges["source"], edges["target"]))
   <div class="lost-card"><span class="lost-icon">?</span><p class="lost-name">Yo-Yo Rodriguez</p><p class="lost-status">degree: 0</p></div>
 </div>
 
-<!-- ══ WHAT SURPRISED US ══ -->
 <section class="prose reveal">
   <h3>What surprised us</h3>
   <p>The network reflects how Wikipedia was written, not the Marvel universe itself.
@@ -210,6 +287,7 @@ G.add_edges_from(zip(edges["source"], edges["target"]))
   <a href="https://github.com/Ali0Afif/marvel-network" target="_blank">GitHub ↗</a>
 </footer>
 
+<script src="js/gallery.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="js/network_data.js"></script>
 <script>
@@ -464,7 +542,6 @@ G.add_edges_from(zip(edges["source"], edges["target"]))
     const nd = nodes.find(x => x.id === walkId);
     if (!nd) { stopWalk(); return; }
 
-    /* gather neighbors */
     const nbrs = new Set();
     links.forEach(l => {
       const sid = typeof l.source==='object'?l.source.id:l.source;
@@ -473,7 +550,6 @@ G.add_edges_from(zip(edges["source"], edges["target"]))
       if (tid===walkId) nbrs.add(sid);
     });
 
-    /* visual highlight */
     node.attr('opacity', n => n.id===walkId||nbrs.has(n.id) ? 1 : 0.04);
     link
       .attr('opacity', l => {
@@ -493,7 +569,6 @@ G.add_edges_from(zip(edges["source"], edges["target"]))
       });
     labels.attr('opacity', l => l.id===walkId||nbrs.has(l.id) ? 1 : 0.06);
 
-    /* update panel */
     panelName.textContent = cleanName(nd.name);
     panelIn.textContent   = nd.in;
     panelOut.textContent  = nd.out;
@@ -502,7 +577,6 @@ G.add_edges_from(zip(edges["source"], edges["target"]))
     document.getElementById('nc-count').textContent =
       `Walking: ${cleanName(nd.name)} &nbsp;·&nbsp; ${nbrs.size} connection${nbrs.size!==1?'s':''}`;
 
-    /* next step: follow a random giant-component neighbor */
     const giantNbrs = [...nbrs].filter(nid => compOf[nid] === giantIdx);
     walkId = giantNbrs.length
       ? giantNbrs[Math.floor(Math.random() * giantNbrs.length)]
@@ -511,7 +585,7 @@ G.add_edges_from(zip(edges["source"], edges["target"]))
 
   function stopWalk() {
     clearInterval(walkTimer); walkTimer = null; walkActive = false; walkId = null;
-    document.getElementById('btn-walk').textContent = '▷  RANDOM WALK';
+    document.getElementById('btn-walk').textContent = '▷  RANDOM WALK';
     document.getElementById('btn-walk').classList.remove('active');
     reset();
     document.getElementById('nc-count').textContent = '303 nodes · 1,784 edges';
@@ -522,15 +596,14 @@ G.add_edges_from(zip(edges["source"], edges["target"]))
       stopWalk();
     } else {
       walkActive = true;
-      this.textContent = '◼  STOP WALK';
+      this.textContent = '◼  STOP WALK';
       this.classList.add('active');
-      selected = null; // clear manual selection
+      selected = null;
       walkStep();
       walkTimer = setInterval(walkStep, 1700);
     }
   });
 
-  /* stop walk on manual click */
   svg.on('click', () => { if (walkActive) stopWalk(); else reset(); });
 
   /* scroll reveal */

@@ -56,25 +56,58 @@
   <p class="rh-scroll-hint">↓ scroll to discover</p>
 </section>
 
-<!-- ══ INTRODUCTION ══ -->
-<section class="prose reveal">
-  <p>Imagine you are a Marvel superhero. You know a number of other characters —
-  some by alliance, some by rivalry, all by the network of Wikipedia links.
-  Now here is a strange question:</p>
+<!-- ══ GALLERY TRACK 1 — The Paradox ══ -->
+<div class="gallery-track" data-screens="1.45">
+  <div class="g-sticky">
 
-  <div class="finding-block" style="margin: 1.5rem 0">
-    <p class="fb-label">THE PARADOX</p>
-    <h2 class="fb-title">ON AVERAGE, YOUR CONNECTIONS ARE MORE CONNECTED THAN YOU.</h2>
+    <div class="g-indicator">
+      <div class="g-dots"></div>
+      <div class="g-num">01</div>
+    </div>
+
+    <!-- Exhibit 01: The Paradox Statement -->
+    <div class="g-exhibit">
+      <div class="ex-canvas">
+        <span class="ex-eyebrow">EXHIBIT 01 &nbsp;·&nbsp; THE DISCOVERY</span>
+        <p class="ex-statement">ON AVERAGE, YOUR CONNECTIONS ARE MORE CONNECTED THAN YOU.</p>
+        <p class="ex-description">
+          This is the friendship paradox — a mathematical property of almost every real-world network.
+          It sounds impossible. But it holds for the vast majority of Marvel heroes.
+          Not because the universe is unfair. Because of the way networks are built.
+        </p>
+        <div class="ex-wall-label">
+          <span class="wl-chip">THE FRIENDSHIP PARADOX</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Feld, 1991</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Holds for 83%+ of Marvel heroes</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exhibit 02: The Mechanism -->
+    <div class="g-exhibit">
+      <div class="ex-canvas">
+        <span class="ex-eyebrow">EXHIBIT 02 &nbsp;·&nbsp; THE MECHANISM</span>
+        <p class="ex-statement">SPIDER-MAN IS EVERYONE'S NEIGHBOUR.</p>
+        <p class="ex-description">
+          The paradox exists because hubs appear in many heroes' connection lists.
+          When Spider-Man (106 in-links) is your neighbor, he pulls your average up — dramatically.
+          Not bad luck. The structure of the network asserting itself.
+          The more skewed the degree distribution, the stronger the paradox.
+        </p>
+        <div class="ex-wall-label">
+          <span class="wl-chip">HUB EFFECT</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Skewed degree distribution</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Mean neighbor degree > your degree</span>
+        </div>
+      </div>
+    </div>
+
   </div>
-
-  <p>This is the <em>friendship paradox</em> — a mathematical property of almost every real network.
-  It occurs because hubs (highly connected nodes) appear in many people's friend lists,
-  pulling the average up. Spider-Man is everyone's neighbor. That skews the math.</p>
-
-  <p>Below, pick any Marvel character. We will calculate their in-degree — how popular they are —
-  and compare it against the average popularity of everyone they connect with.
-  Most of the time, their connections will win.</p>
-</section>
+</div>
 
 <!-- ══ CHARACTER SELECTOR ══ -->
 <div class="char-selector-section">
@@ -123,38 +156,49 @@
   </div>
 </div>
 
-<!-- ══ WHO ARE THE POPULAR FRIENDS? ══ -->
-<section class="prose reveal">
-  <h3>Who are the "popular friends"?</h3>
-  <p>The characters who most strongly drive the paradox are the hubs — the Spider-Mans and Hulks
-  who appear in many connections' lists. Whenever they are your neighbor, they pull your average up.
-  That is why the paradox is not a coincidence: it is a structural property of any network
-  where degree distribution is skewed.</p>
-</section>
+<!-- ══ GALLERY TRACK 2 — The Exception ══ -->
+<div class="gallery-track" data-screens="1.3">
+  <div class="g-sticky">
 
+    <div class="g-indicator">
+      <div class="g-dots"></div>
+      <div class="g-num">03</div>
+    </div>
+
+    <!-- Exhibit 03: Spider-Man beats the paradox -->
+    <div class="g-exhibit">
+      <div class="ex-canvas">
+        <span class="ex-eyebrow">EXHIBIT 03 &nbsp;·&nbsp; THE EXCEPTION</span>
+        <div class="ex-stat-block">
+          <span class="ex-giant-num">106</span>
+          <span class="ex-unit-label">SPIDER-MAN · THE PARADOX PERSONIFIED</span>
+        </div>
+        <p class="ex-description">
+          With 106 incoming links, Spider-Man doesn't suffer the friendship paradox —
+          he <em>causes</em> it for everyone else. His neighbors cannot pull his average above him.
+          He IS the hub. The paradox breaks down exactly at the centre of the network.
+          Find a hero with more popular friends than Spider-Man. You can't.
+        </p>
+        <div class="ex-wall-label">
+          <span class="wl-chip">THE EXCEPTION TO THE PARADOX</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Max in-degree: 106</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Avg neighbor in-degree &lt; 106</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ WHO ARE THE POPULAR FRIENDS? ══ -->
 <div class="rank-header reveal">
   <span class="rank-header-label">HIGHEST PARADOX AMPLIFIERS &nbsp;·&nbsp; TOP IN-DEGREE</span>
   <div class="rank-header-rule"></div>
   <span class="rank-header-label">THE POPULAR FRIENDS</span>
 </div>
 <div id="paradox-amplifers"></div>
-
-<!-- ══ FINAL FINDING ══ -->
-<div class="finding-block reveal" style="max-width:var(--max); margin: 3rem auto 0 2rem">
-  <p class="fb-label">FINDING 03</p>
-  <h2 class="fb-title">IS THERE A SUPERHERO NOBODY OUT-POPULARS?</h2>
-</div>
-
-<section class="prose reveal">
-  <p>Yes — and it is Spider-Man. With 106 incoming links, the probability that any character
-  has more popular connections than Spider-Man himself approaches zero.
-  He is not just a hub. He is the paradox personified.</p>
-
-  <p>The friendship paradox holds for the vast majority of Marvel heroes.
-  The rare exceptions — heroes whose connections are <em>less</em> connected than themselves —
-  are the ones who link primarily to each other and to isolated characters, not to the great hubs.
-  Find them with the selector above.</p>
-</section>
 
 <!-- ══ RETURN ══ -->
 <section class="next-room reveal">
@@ -169,6 +213,7 @@
   <a href="https://github.com/Ali0Afif/marvel-network" target="_blank">GitHub ↗</a>
 </footer>
 
+<script src="js/gallery.js"></script>
 <script src="js/network_data.js"></script>
 <script>
 (function () {
@@ -206,7 +251,6 @@
       .sort((a,b) => b.in - a.in)
       .slice(0, 6);
 
-    /* percentile: fraction of nodes with in-degree ≤ mine */
     const belowOrEqual = sortedByIn.filter(n => n.in <= myIn).length;
     const percentile   = Math.round((belowOrEqual / NODES.length) * 100);
 
@@ -238,7 +282,6 @@
   const searchEl     = document.getElementById('char-search');
   const suggestEl    = document.getElementById('char-suggestions');
   const sortedByName = [...NODES].sort((a,b) => cleanName(a.name).localeCompare(cleanName(b.name)));
-  /* connected nodes only (for random hero — exclude isolates) */
   const connected    = NODES.filter(n => (neighbors[n.id]?.size || 0) > 0);
 
   searchEl.addEventListener('input', () => {
@@ -297,9 +340,8 @@
       ? `${result.friendCount} connection${result.friendCount !== 1 ? 's' : ''}`
       : 'No connections';
 
-    /* animated numbers */
-    const youNumEl     = document.getElementById('pd-you-num');
-    const friendNumEl  = document.getElementById('pd-friends-num');
+    const youNumEl    = document.getElementById('pd-you-num');
+    const friendNumEl = document.getElementById('pd-friends-num');
     youNumEl.textContent = '0';
     friendNumEl.textContent = result ? '0.0' : '—';
 

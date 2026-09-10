@@ -75,19 +75,57 @@
 </section>
 <div id="net-tooltip"></div>
 
-<!-- ── What are we exploring ── -->
-<section class="about-strip">
-  <p class="strip-heading">WHAT ARE WE EXPLORING?</p>
-  <p class="strip-text">
-    We are not mapping the Marvel universe exactly as it exists in the comics.
-    We are mapping how the Marvel universe is <em>represented through Wikipedia links</em>.
-    Every directed edge is an editorial act: one character's Wikipedia page chose to mention another.
-  </p>
-  <p class="strip-text reveal">
-    Every connection tells us something about how these characters are organised, referenced and
-    connected — not by their stories, but by how the internet writes about them.
-  </p>
-</section>
+<!-- ── What are we exploring (gallery track) ── -->
+<div class="gallery-track" data-screens="1.3">
+  <div class="g-sticky">
+
+    <div class="g-indicator">
+      <div class="g-dots"></div>
+      <div class="g-num">01</div>
+    </div>
+
+    <div class="g-exhibit">
+      <div class="ex-canvas">
+        <span class="ex-eyebrow">THE EXHIBITION &nbsp;·&nbsp; WHAT WE ARE MAPPING</span>
+        <p class="ex-statement">NOT THE MARVEL UNIVERSE. HOW THE INTERNET WRITES ABOUT IT.</p>
+        <p class="ex-description">
+          Every directed edge in this network is an editorial act —
+          one character's Wikipedia page chose to mention another.
+          We are not mapping Marvel's stories. We are mapping the attention
+          Wikipedia's editors gave to 303 heroes. One link at a time.
+        </p>
+        <div class="ex-wall-label">
+          <span class="wl-chip">DATA SOURCE</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Wikipedia Category: Marvel Comics Superheroes</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">Directed Link Network · 2026</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="g-exhibit">
+      <div class="ex-canvas">
+        <span class="ex-eyebrow">THE METHOD &nbsp;·&nbsp; HOW WE BUILT IT</span>
+        <p class="ex-statement">EVERY CONNECTION TELLS US SOMETHING ABOUT ATTENTION, NOT STORY.</p>
+        <p class="ex-description">
+          Each directed link is evidence: some editor, somewhere, decided this character
+          was worth mentioning on another character's page. The resulting network
+          is a record of collective attention — filtered through Wikipedia's editorial culture.
+          Enter the rooms below to explore what that looks like.
+        </p>
+        <div class="ex-wall-label">
+          <span class="wl-chip">COMPUTATIONAL SOCIAL SCIENCE</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">DTU 02805 · 2026</span>
+          <span class="wl-sep">·</span>
+          <span class="wl-chip">NetworkX · D3.js · Python</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 <!-- ── Room cards ── -->
 <section class="rooms-section">
@@ -143,6 +181,7 @@
   <a href="https://github.com/Ali0Afif/marvel-network" target="_blank">GitHub ↗</a>
 </footer>
 
+<script src="js/gallery.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="js/network_data.js"></script>
 <script>
